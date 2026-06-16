@@ -128,7 +128,8 @@ const LCOLORS=[{n:"Día",h:[1,0.97,0.88]},{n:"Cálida",h:[1,0.8,0.4]},{n:"Atarde
 let intensity=0.8, shadow=0.65, ambient=0.18;
 let lightType="soft", lcolor=LCOLORS[0];
 let rotX=0.15, rotY=-0.3;
-let ltheta=Math.PI/4, lphi=Math.PI/3;
+// Light stored as direct screen position (pixels), not angles
+let lightPX = 0.75, lightPY = 0.2; // normalized 0-1 across full screen
 let W, H, modelLoaded=false;
 
 /* ── RENDERER ── */
@@ -216,20 +217,16 @@ wrap.appendChild(overlay);
 const oc = overlay.getContext("2d");
 
 function getLightDir(){
-  return new THREE.Vector3(
-    Math.sin(ltheta)*Math.cos(lphi),
-    Math.cos(ltheta),
-    Math.sin(ltheta)*Math.sin(lphi)
-  ).normalize();
+  // Direct mapping: screen position -> light direction, no constraints
+  const sx = (lightPX - 0.5) * 2.8;
+  const sy = -(lightPY - 0.5) * 2.8;
+  const z  = Math.max(0.15, 1.2 - Math.sqrt(sx*sx + sy*sy) * 0.5);
+  return new THREE.Vector3(sx, sy, z).normalize();
 }
 
 function getLightScreenPos(){
-  const ld = getLightDir();
-  const proj = ld.clone().multiplyScalar(0.5);
-  return{
-    x: Math.max(24, Math.min(W-24, (proj.x*0.5+0.5)*W)),
-    y: Math.max(24, Math.min(H-24, (-proj.y*0.5+0.5)*H))
-  };
+  // Bulb sits exactly where the user dragged it
+  return { x: lightPX * W, y: lightPY * H };
 }
 
 function drawBulb(){
@@ -326,9 +323,9 @@ function onMove(e){
   if(!dragging&&!headDrag)return;
   const {x,y}=getXY(e);
   if(dragging){
-    const nx=(x/W)*2-1, ny=-(y/H)*2+1;
-    ltheta=Math.acos(Math.max(-1,Math.min(1,ny)));
-    lphi=Math.atan2(ny,nx);
+    // Store light as normalized screen position — free movement, no constraint
+    lightPX = Math.max(0, Math.min(1, x / W));
+    lightPY = Math.max(0, Math.min(1, y / H));
     updateLight();
   } else if(headDrag){
     rotY=ry0+(x-hx0)*0.009;
