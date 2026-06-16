@@ -11,7 +11,7 @@
 body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
 .bubbles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
 .bubble{position:absolute;border-radius:50%;filter:blur(80px);opacity:.09;animation:drift 20s ease-in-out infinite alternate;}
-.b1{width:500px;height:500px;background:var(--yellow);top:-100px;left:20%;animation-delay:0s;}
+.b1{width:500px;height:500px;background:var(--yellow);top:-100px;left:20%;}
 .b2{width:350px;height:350px;background:var(--orange);bottom:-80px;right:-80px;animation-delay:-8s;}
 @keyframes drift{from{transform:translate(0,0)scale(1);}to{transform:translate(30px,25px)scale(1.08);}}
 nav{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:1.2rem 2rem;border-bottom:1px solid var(--border);background:rgba(15,14,23,.85);backdrop-filter:blur(12px);}
@@ -20,38 +20,79 @@ nav{position:relative;z-index:10;display:flex;align-items:center;justify-content
 .nav-btn{font-family:'Nunito',sans-serif;font-size:.85rem;font-weight:800;padding:8px 18px;border-radius:50px;border:2px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;text-decoration:none;transition:all .2s;}
 .nav-btn:hover{border-color:var(--yellow);color:var(--yellow);background:#ffd16615;}
 .nav-btn.active{background:var(--yellow);border-color:var(--yellow);color:#000;}
-.hero{position:relative;z-index:1;text-align:center;padding:2.5rem 1rem 1.5rem;}
-.hero-emoji{font-size:3.5rem;display:block;margin-bottom:.6rem;animation:pulse 2.5s ease-in-out infinite;filter:drop-shadow(0 0 20px #ffd16666);}
-@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}
-.hero h1{font-family:'Fredoka One',cursive;font-size:clamp(1.8rem,4vw,3rem);background:linear-gradient(135deg,var(--yellow),var(--orange),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.3rem;}
-.hero p{color:var(--muted);font-weight:600;font-size:.95rem;}
-main{position:relative;z-index:1;max-width:1060px;margin:0 auto;padding:1.5rem 1.5rem 4rem;display:grid;grid-template-columns:1fr 300px;gap:1.5rem;align-items:start;}
+.hero{position:relative;z-index:1;text-align:center;padding:2rem 1rem 1rem;}
+.hero h1{font-family:'Fredoka One',cursive;font-size:clamp(1.8rem,4vw,2.8rem);background:linear-gradient(135deg,var(--yellow),var(--orange),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.3rem;}
+.hero p{color:var(--muted);font-weight:600;font-size:.9rem;}
+main{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:1rem 1.5rem 4rem;display:grid;grid-template-columns:1fr 310px;gap:1.5rem;align-items:start;}
 .canvas-col{display:flex;flex-direction:column;gap:10px;}
-.stage-wrap{position:relative;background:#111318;border:2px solid var(--border);border-radius:20px;aspect-ratio:1;overflow:hidden;cursor:grab;}
+.stage-wrap{position:relative;background:#0d0d12;border:2px solid var(--border);border-radius:20px;aspect-ratio:1;overflow:hidden;cursor:grab;}
 .stage-wrap canvas{display:block;width:100%;height:100%;}
-.drag-hint{display:flex;gap:1.5rem;justify-content:center;font-size:.82rem;color:var(--muted);font-weight:700;padding:.4rem 0;}
+.drag-hint{display:flex;gap:1.2rem;justify-content:center;font-size:.78rem;color:var(--muted);font-weight:700;padding:.3rem 0;flex-wrap:wrap;}
 #loadingMsg{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;font-family:'Fredoka One',cursive;color:var(--muted);font-size:1rem;z-index:5;pointer-events:none;}
 .spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--yellow);border-radius:50%;animation:spin 1s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.controls-col{display:flex;flex-direction:column;gap:12px;}
-.ctrl-card{background:var(--card);border:2px solid var(--border);border-radius:16px;padding:1rem 1.1rem;}
-.ctrl-title{font-family:'Fredoka One',cursive;font-size:.9rem;margin-bottom:.7rem;color:var(--text);}
-.light-pills{display:flex;flex-wrap:wrap;gap:6px;}
-.light-pill{font-family:'Nunito',sans-serif;font-size:.72rem;font-weight:800;padding:5px 12px;border-radius:50px;border:2px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .18s;}
-.light-pill.active{background:var(--yellow);border-color:var(--yellow);color:#000;}
-.light-pill:hover:not(.active){border-color:var(--yellow);color:var(--yellow);}
-.color-swatches{display:flex;gap:7px;flex-wrap:wrap;}
-.swatch{width:28px;height:28px;border-radius:7px;cursor:pointer;border:2px solid transparent;transition:all .18s;}
-.swatch.active{border-color:#fff;transform:scale(1.15);}
-.slider-row{display:flex;flex-direction:column;gap:8px;}
-.slider-lbl{display:flex;justify-content:space-between;font-size:.75rem;font-weight:700;color:var(--muted);}
+
+/* CONTROLS */
+.controls-col{display:flex;flex-direction:column;gap:10px;}
+.ctrl-card{background:var(--card);border:2px solid var(--border);border-radius:16px;padding:.9rem 1rem;}
+.ctrl-title{font-family:'Fredoka One',cursive;font-size:.88rem;margin-bottom:.65rem;color:var(--text);display:flex;align-items:center;gap:6px;}
+
+/* LIGHT TABS */
+.light-tabs{display:flex;gap:5px;margin-bottom:.8rem;}
+.light-tab{font-family:'Fredoka One',cursive;font-size:.85rem;flex:1;padding:7px 8px;border-radius:10px;border:2px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .18s;text-align:center;}
+.light-tab:hover{border-color:var(--border);}
+.light-tab.key-active{background:#ffd16622;border-color:var(--yellow);color:var(--yellow);}
+.light-tab.fill-active{background:#4cc9f022;border-color:var(--blue);color:var(--blue);}
+
+/* LIGHT PANEL */
+.light-panel{display:none;flex-direction:column;gap:8px;}
+.light-panel.show{display:flex;}
+
+/* TYPE PILLS */
+.pill-row{display:flex;flex-wrap:wrap;gap:5px;}
+.lpill{font-family:'Nunito',sans-serif;font-size:.7rem;font-weight:800;padding:4px 10px;border-radius:50px;border:2px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .18s;}
+.lpill.active-key{background:var(--yellow);border-color:var(--yellow);color:#000;}
+.lpill.active-fill{background:var(--blue);border-color:var(--blue);color:#000;}
+.lpill:hover:not(.active-key):not(.active-fill){border-color:#ffffff44;color:var(--text);}
+
+/* TOGGLE */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;font-size:.75rem;font-weight:700;color:var(--muted);}
+.toggle{position:relative;width:36px;height:20px;cursor:pointer;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;inset:0;border-radius:10px;background:var(--border);transition:.2s;}
+.toggle input:checked+.toggle-slider{background:var(--yellow);}
+.toggle-slider::before{content:'';position:absolute;width:14px;height:14px;left:3px;top:3px;border-radius:50%;background:#fff;transition:.2s;}
+.toggle input:checked+.toggle-slider::before{transform:translateX(16px);}
+
+/* COLOR SWATCHES */
+.swatches{display:flex;gap:6px;flex-wrap:wrap;}
+.sw{width:26px;height:26px;border-radius:6px;cursor:pointer;border:2px solid transparent;transition:all .15s;flex-shrink:0;}
+.sw.active{border-color:#fff;transform:scale(1.15);}
+
+/* SLIDERS */
+.slider-row{display:flex;flex-direction:column;gap:7px;}
+.slider-lbl{display:flex;justify-content:space-between;font-size:.73rem;font-weight:700;color:var(--muted);}
 .slider-lbl span{color:var(--yellow);}
 input[type=range]{width:100%;-webkit-appearance:none;height:4px;border-radius:2px;background:var(--border);outline:none;cursor:pointer;}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--yellow);cursor:pointer;}
-.legend{display:flex;flex-direction:column;gap:5px;}
-.legend-item{display:flex;align-items:center;gap:8px;font-size:.75rem;font-weight:700;color:var(--muted);}
-.legend-dot{width:11px;height:11px;border-radius:3px;flex-shrink:0;}
-.tip-box{background:#ffd16610;border:1px solid #ffd16633;border-radius:10px;padding:.7rem .9rem;font-size:.75rem;font-weight:700;color:var(--yellow);line-height:1.6;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--yellow);cursor:pointer;}
+.fill-range::-webkit-slider-thumb{background:var(--blue)!important;}
+
+/* MODEL UPLOAD */
+.upload-zone{border:2px dashed var(--border);border-radius:12px;padding:1rem;text-align:center;cursor:pointer;transition:all .2s;}
+.upload-zone:hover{border-color:var(--purple);background:#c77dff08;}
+.upload-zone.drag-over{border-color:var(--purple);background:#c77dff15;}
+.upload-icon{font-size:1.8rem;margin-bottom:5px;}
+.upload-txt{font-size:.75rem;font-weight:700;color:var(--muted);}
+.upload-sub{font-size:.68rem;color:#ffffff22;margin-top:3px;}
+.file-badge{display:none;align-items:center;gap:7px;background:#06d6a022;border:1px solid #06d6a044;border-radius:8px;padding:6px 10px;font-size:.73rem;font-weight:700;color:var(--cyan);margin-top:6px;}
+.file-badge.show{display:flex;}
+.file-badge-x{cursor:pointer;color:var(--pink);margin-left:auto;font-size:1rem;line-height:1;}
+
+/* LEGEND */
+.legend{display:flex;flex-direction:column;gap:4px;}
+.legend-item{display:flex;align-items:center;gap:7px;font-size:.72rem;font-weight:700;color:var(--muted);}
+.legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
+.tip-box{background:#ffd16610;border:1px solid #ffd16633;border-radius:10px;padding:.65rem .85rem;font-size:.73rem;font-weight:700;color:var(--yellow);line-height:1.6;}
 </style>
 </head>
 <body>
@@ -64,45 +105,87 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
   </div>
 </nav>
 <div class="hero">
-  <span class="hero-emoji">💡</span>
-  <h1>Estudio de Iluminación 3D</h1>
-  <p>Arrastra la cabeza para rotarla · Arrastra la luz 💡 para cambiar la dirección</p>
+  <h1>💡 Estudio de Iluminación 3D</h1>
+  <p>Arrastra la cabeza para rotarla · Arrastra los bulbos de luz para moverlos</p>
 </div>
+
 <main>
   <div class="canvas-col">
     <div class="stage-wrap" id="stageWrap">
       <canvas id="c"></canvas>
-      <div id="loadingMsg">
-        <div class="spinner"></div>
-        <span>Cargando modelo...</span>
-      </div>
+      <div id="loadingMsg"><div class="spinner"></div><span>Cargando modelo...</span></div>
     </div>
     <div class="drag-hint">
       <span>↻ Arrastra para rotar</span>
-      <span>💡 Arrastra la luz</span>
+      <span>🟡 Key light</span>
+      <span>🔵 Fill light</span>
     </div>
   </div>
 
   <div class="controls-col">
+
+    <!-- LIGHTS PANEL -->
     <div class="ctrl-card">
-      <div class="ctrl-title">💡 Tipo de luz</div>
-      <div class="light-pills" id="ltypes"></div>
-    </div>
-    <div class="ctrl-card">
-      <div class="ctrl-title">🎨 Color de luz</div>
-      <div class="color-swatches" id="lcolors"></div>
-    </div>
-    <div class="ctrl-card">
-      <div class="ctrl-title">⚙️ Ajustes</div>
-      <div class="slider-row">
-        <div class="slider-lbl">Intensidad <span id="vi">80%</span></div>
-        <input type="range" min="20" max="100" value="80" step="1" id="si" oninput="intensity=this.value/100;document.getElementById('vi').textContent=this.value+'%';updateLight()">
-        <div class="slider-lbl">Sombra <span id="vs">65%</span></div>
-        <input type="range" min="10" max="100" value="65" step="1" id="ss" oninput="shadow=this.value/100;document.getElementById('vs').textContent=this.value+'%';updateLight()">
-        <div class="slider-lbl">Ambient <span id="va">18%</span></div>
-        <input type="range" min="0" max="50" value="18" step="1" id="sa" oninput="ambient=this.value/100;document.getElementById('va').textContent=this.value+'%';updateLight()">
+      <div class="ctrl-title">💡 Puntos de luz</div>
+
+      <!-- Tabs -->
+      <div class="light-tabs">
+        <button class="light-tab key-active" id="tabKey" onclick="selectLightTab('key')">🟡 Key</button>
+        <button class="light-tab" id="tabFill" onclick="selectLightTab('fill')">🔵 Fill</button>
+      </div>
+
+      <!-- KEY panel -->
+      <div class="light-panel show" id="panelKey">
+        <div class="toggle-row">
+          <span>Activar Key light</span>
+          <label class="toggle"><input type="checkbox" id="keyOn" checked onchange="updateLights()"><span class="toggle-slider"></span></label>
+        </div>
+        <div style="font-size:.7rem;font-weight:700;color:var(--muted);margin-top:2px">Tipo</div>
+        <div class="pill-row" id="keyTypes"></div>
+        <div style="font-size:.7rem;font-weight:700;color:var(--muted);margin-top:4px">Color</div>
+        <div class="swatches" id="keyColors"></div>
+        <div class="slider-lbl">Intensidad <span id="vki">80%</span></div>
+        <input type="range" min="10" max="100" value="80" step="1" id="ski" oninput="document.getElementById('vki').textContent=this.value+'%';updateLights()">
+      </div>
+
+      <!-- FILL panel -->
+      <div class="light-panel" id="panelFill">
+        <div class="toggle-row">
+          <span>Activar Fill light</span>
+          <label class="toggle"><input type="checkbox" id="fillOn" checked onchange="updateLights()"><span class="toggle-slider"></span></label>
+        </div>
+        <div style="font-size:.7rem;font-weight:700;color:var(--muted);margin-top:2px">Tipo</div>
+        <div class="pill-row" id="fillTypes"></div>
+        <div style="font-size:.7rem;font-weight:700;color:var(--muted);margin-top:4px">Color</div>
+        <div class="swatches" id="fillColors"></div>
+        <div class="slider-lbl">Intensidad <span id="vfi">40%</span></div>
+        <input type="range" min="0" max="100" value="40" step="1" class="fill-range" id="sfi" oninput="document.getElementById('vfi').textContent=this.value+'%';updateLights()">
       </div>
     </div>
+
+    <!-- AMBIENT -->
+    <div class="ctrl-card">
+      <div class="ctrl-title">🌫 Luz ambiental</div>
+      <div class="slider-lbl">Ambiente <span id="va">18%</span></div>
+      <input type="range" min="0" max="60" value="18" step="1" id="sa" oninput="document.getElementById('va').textContent=this.value+'%';updateLights()">
+    </div>
+
+    <!-- MODEL UPLOAD -->
+    <div class="ctrl-card">
+      <div class="ctrl-title">📦 Modelo personalizado</div>
+      <div class="upload-zone" id="uploadZone" onclick="document.getElementById('stlInput').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleDrop(event)">
+        <div class="upload-icon">📂</div>
+        <div class="upload-txt">Subir tu propio STL</div>
+        <div class="upload-sub">Arrastra aquí o haz clic</div>
+      </div>
+      <div class="file-badge" id="fileBadge">
+        <span>✅</span><span id="fileName">—</span>
+        <span class="file-badge-x" onclick="resetModel()">✕</span>
+      </div>
+      <input type="file" id="stlInput" accept=".stl" style="display:none" onchange="handleSTLFile(this.files[0])">
+    </div>
+
+    <!-- LEGEND -->
     <div class="ctrl-card">
       <div class="ctrl-title">📖 Zonas de luz</div>
       <div class="legend">
@@ -110,36 +193,64 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
         <div class="legend-item"><div class="legend-dot" style="background:#c8925a"></div>Zona de luz media</div>
         <div class="legend-item"><div class="legend-dot" style="background:#7a4825"></div>Penumbra (terminator)</div>
         <div class="legend-item"><div class="legend-dot" style="background:#2a1408"></div>Sombra profunda</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#1a2535;border:1px solid #4cc9f044"></div>Luz rebotada</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#1a2535;border:1px solid #4cc9f033"></div>Luz rebotada</div>
       </div>
     </div>
-    <div class="tip-box" id="tipBox">💡 Arrastra la luz para ver cómo cambian las sombras sobre los planos de la cabeza Asaro.</div>
+
+    <div class="tip-box" id="tipBox">💡 Arrastra el bulbo amarillo (Key) o azul (Fill) para cambiar la dirección de cada luz independientemente.</div>
+
   </div>
 </main>
 
-<!-- Three.js r128 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-/* ── CONFIG ── */
-const TIPS={soft:"Luz suave: transiciones graduales, ideal para retratos.",hard:"Luz dura: sombras con borde nítido y terminador definido.",rim:"Rim light: contraluz que separa al sujeto del fondo.",ambient:"Luz ambiental: iluminación uniforme sin sombras direccionales.",dramatic:"Luz dramática: alto contraste, mitad en luz y mitad en sombra."};
-const LTYPES=["soft","hard","rim","ambient","dramatic"];
-const LCOLORS=[{n:"Día",h:[1,0.97,0.88]},{n:"Cálida",h:[1,0.8,0.4]},{n:"Atardecer",h:[1,0.55,0.26]},{n:"Fría",h:[0.66,0.85,0.94]},{n:"Luna",h:[0.75,0.78,1]},{n:"Verde",h:[0.66,1,0.69]}];
+/* ── DATA ── */
+const LTYPES = ["soft","hard","rim","dramatic"];
+const LTYPE_LABELS = {soft:"Suave",hard:"Dura",rim:"Rim",dramatic:"Dramática"};
+const TIPS = {
+  soft:"Luz suave: transiciones graduales, ideal para retratos.",
+  hard:"Luz dura: borde nítido y terminador definido.",
+  rim:"Rim light: contraluz que separa al sujeto del fondo.",
+  dramatic:"Dramática: alto contraste, mitad luz y mitad sombra."
+};
+const COLORS = [
+  {n:"Día",    h:[1,0.97,0.88]},
+  {n:"Cálida", h:[1,0.80,0.40]},
+  {n:"Sunset", h:[1,0.55,0.26]},
+  {n:"Fría",   h:[0.66,0.85,0.94]},
+  {n:"Luna",   h:[0.75,0.78,1]},
+  {n:"Verde",  h:[0.66,1,0.69]},
+];
+const FILL_COLORS = [
+  {n:"Azul",   h:[0.40,0.60,1]},
+  {n:"Cyan",   h:[0.50,0.90,0.95]},
+  {n:"Neutro", h:[0.85,0.85,0.90]},
+  {n:"Cálida", h:[1,0.80,0.55]},
+  {n:"Verde",  h:[0.50,0.90,0.60]},
+  {n:"Violeta",h:[0.75,0.55,1]},
+];
 
-let intensity=0.8, shadow=0.65, ambient=0.18;
-let lightType="soft", lcolor=LCOLORS[0];
+/* ── STATE ── */
+// Key light
+let keyPX=0.78, keyPY=0.18, keyType="soft", keyColor=COLORS[0], keyInt=0.8;
+// Fill light
+let fillPX=0.18, fillPY=0.72, fillType="soft", fillColor=FILL_COLORS[0], fillInt=0.4;
+// Global
+let ambientVal=0.18;
 let rotX=0.15, rotY=-0.3;
-// Light stored as direct screen position (pixels), not angles
-let lightPX = 0.75, lightPY = 0.2; // normalized 0-1 across full screen
-let W, H, modelLoaded=false;
+let W, H;
+let activeLightTab = "key";
+let draggingLight = null; // "key" | "fill" | null
+let headDrag = false, hx0=0, hy0=0, rx0=0, ry0=0;
 
 /* ── RENDERER ── */
-const wrap   = document.getElementById("stageWrap");
-const canvas = document.getElementById("c");
+const wrap     = document.getElementById("stageWrap");
+const canvas   = document.getElementById("c");
 const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
 renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-renderer.setClearColor(0x111318,1);
+renderer.setClearColor(0x0d0d12,1);
 renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.type    = THREE.PCFSoftShadowMap;
 
 const scene  = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(45,1,0.1,200);
@@ -149,138 +260,166 @@ camera.lookAt(0,0,0);
 const headGroup = new THREE.Group();
 scene.add(headGroup);
 
-/* ── LIGHTS ── */
-const dirLight  = new THREE.DirectionalLight(0xfff8e1, 1.4);
-dirLight.position.set(2,3,3);
-dirLight.castShadow = true;
-scene.add(dirLight);
+/* ── THREE LIGHTS ── */
+const keyLight3  = new THREE.DirectionalLight(0xfff8e1, 1.4);
+keyLight3.castShadow = true;
+scene.add(keyLight3);
 
-const fillLight = new THREE.DirectionalLight(0x4488aa, 0.3);
-fillLight.position.set(-3,-1,1);
-scene.add(fillLight);
+const fillLight3 = new THREE.DirectionalLight(0x6699ff, 0.5);
+scene.add(fillLight3);
 
-const ambLight  = new THREE.AmbientLight(0xffffff, 0.25);
-scene.add(ambLight);
+const ambLight3  = new THREE.AmbientLight(0xffffff, 0.22);
+scene.add(ambLight3);
 
-/* ── STL LOADER (inline, no CDN needed) ── */
-/* Three.js r128 STLLoader — embedded to avoid CDN dependency */
-THREE.STLLoader = function(manager){this.manager=manager||THREE.DefaultLoadingManager;};
-THREE.STLLoader.prototype={constructor:THREE.STLLoader,load:function(url,onLoad,onProgress,onError){var scope=this;var loader=new THREE.FileLoader(scope.manager);loader.setResponseType('arraybuffer');loader.load(url,function(text){onLoad(scope.parse(text));},onProgress,onError);},parse:function(data){var isBinary=function(){var reader,expect,face_size,n_faces,dbuf;try{reader=new DataView(data);face_size=(32/8*3)+(32/8*3*3)+(16/8);n_faces=reader.getUint32(80,true);expect=80+(32/8)+n_faces*face_size;if(expect===reader.byteLength)return true;if(n_faces===0)return false;dbuf=new Uint8Array(reader.buffer,reader.byteOffset,reader.byteLength);for(var i=0;i<data.byteLength;i++){if(dbuf[i]>127)return true;}}catch(e){}return false;};if(isBinary()){return this.parseBinary(data);}return this.parseASCII(this.ensureString(data));},ensureString:function(buf){if(typeof buf==='string')return buf;var array=new Uint8Array(buf);var str='';for(var i=0;i<array.length;i++){str+=String.fromCharCode(array[i]);}return str;},parseBinary:function(data){var reader=new DataView(data);var n_faces=reader.getUint32(80,true);var positions=new Float32Array(n_faces*3*3);var normals=new Float32Array(n_faces*3*3);var offset=84;for(var face=0;face<n_faces;face++){var start=offset+face*(12*4+2);var nx=reader.getFloat32(start,true);var ny=reader.getFloat32(start+4,true);var nz=reader.getFloat32(start+8,true);for(var i=1;i<=3;i++){var vertexstart=start+i*12;var tri=(face*3+(i-1))*3;positions[tri]=reader.getFloat32(vertexstart,true);positions[tri+1]=reader.getFloat32(vertexstart+4,true);positions[tri+2]=reader.getFloat32(vertexstart+8,true);normals[tri]=nx;normals[tri+1]=ny;normals[tri+2]=nz;}}var geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(positions,3));geo.setAttribute('normal',new THREE.BufferAttribute(normals,3));return geo;},parseASCII:function(data){var geo=new THREE.BufferGeometry();var patternNormal=/normal[\s]+([\-+]?[0-9]+\.?[0-9]*([eE][\-+]?[0-9]+)?)\s+([\-+]?[0-9]*\.?[0-9]+([eE][\-+]?[0-9]+)?)\s+([\-+]?[0-9]*\.?[0-9]+([eE][\-+]?[0-9]+)?)/g;var patternVertex=/vertex[\s]+([\-+]?[0-9]+\.?[0-9]*([eE][\-+]?[0-9]+)?)\s+([\-+]?[0-9]*\.?[0-9]+([eE][\-+]?[0-9]+)?)\s+([\-+]?[0-9]*\.?[0-9]+([eE][\-+]?[0-9]+)?)/g;var positions=[];var normals=[];var normal=new THREE.Vector3();var result;while((result=patternNormal.exec(data))!==null){normal.x=parseFloat(result[1]);normal.y=parseFloat(result[3]);normal.z=parseFloat(result[5]);}while((result=patternVertex.exec(data))!==null){positions.push(parseFloat(result[1]),parseFloat(result[3]),parseFloat(result[5]));normals.push(normal.x,normal.y,normal.z);}geo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geo.setAttribute('normal',new THREE.Float32BufferAttribute(normals,3));return geo;}};
-
-/* ── SKIN MATERIAL ── */
+/* ── MATERIAL ── */
 const skinMat = new THREE.MeshPhongMaterial({
-  color:     new THREE.Color(0.82, 0.62, 0.42),
-  specular:  new THREE.Color(0.12, 0.08, 0.05),
+  color:     new THREE.Color(0.82,0.62,0.42),
+  specular:  new THREE.Color(0.12,0.08,0.05),
   shininess: 18,
   side: THREE.DoubleSide,
 });
 
-/* ── LOAD STL ── */
-function loadSTL(){
-  const loader = new THREE.STLLoader();
-  loader.load(
-    'models/asaro.stl',
-    function(geo){
-      geo.computeVertexNormals();
-      // center & scale
-      geo.computeBoundingBox();
-      const box  = geo.boundingBox;
-      const size = new THREE.Vector3();
-      box.getSize(size);
-      const center = new THREE.Vector3();
-      box.getCenter(center);
-      const maxDim = Math.max(size.x, size.y, size.z);
-      const scale  = 3.0 / maxDim;
-      geo.translate(-center.x, -center.y, -center.z);
-      geo.scale(scale, scale, scale);
+/* ── STL LOADER (embedded) ── */
+THREE.STLLoader=function(m){this.manager=m||THREE.DefaultLoadingManager;};
+THREE.STLLoader.prototype={constructor:THREE.STLLoader,load:function(url,onLoad,onProg,onErr){var s=this,l=new THREE.FileLoader(s.manager);l.setResponseType('arraybuffer');l.load(url,function(d){onLoad(s.parse(d));},onProg,onErr);},parse:function(data){var isBin=function(){var r,n,fs,exp,db;try{r=new DataView(data);fs=50;n=r.getUint32(80,true);exp=80+4+n*fs;if(exp===r.byteLength)return true;if(n===0)return false;db=new Uint8Array(r.buffer,r.byteOffset,r.byteLength);for(var i=0;i<data.byteLength;i++)if(db[i]>127)return true;}catch(e){}return false;};if(isBin())return this.parseBinary(data);return this.parseASCII(this.ensureString(data));},ensureString:function(buf){if(typeof buf==='string')return buf;var a=new Uint8Array(buf),s='';for(var i=0;i<a.length;i++)s+=String.fromCharCode(a[i]);return s;},parseBinary:function(data){var r=new DataView(data),n=r.getUint32(80,true),pos=new Float32Array(n*9),nor=new Float32Array(n*9),off=84;for(var f=0;f<n;f++){var s=off+f*50,nx=r.getFloat32(s,true),ny=r.getFloat32(s+4,true),nz=r.getFloat32(s+8,true);for(var i=1;i<=3;i++){var vs=s+i*12,t=(f*3+(i-1))*3;pos[t]=r.getFloat32(vs,true);pos[t+1]=r.getFloat32(vs+4,true);pos[t+2]=r.getFloat32(vs+8,true);nor[t]=nx;nor[t+1]=ny;nor[t+2]=nz;}}var g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('normal',new THREE.BufferAttribute(nor,3));return g;},parseASCII:function(data){var g=new THREE.BufferGeometry(),pN=/normal[\s]+([\-+]?\d+\.?\d*([eE][\-+]?\d+)?)\s+([\-+]?\d*\.?\d+([eE][\-+]?\d+)?)\s+([\-+]?\d*\.?\d+([eE][\-+]?\d+)?)/g,pV=/vertex[\s]+([\-+]?\d+\.?\d*([eE][\-+]?\d+)?)\s+([\-+]?\d*\.?\d+([eE][\-+]?\d+)?)\s+([\-+]?\d*\.?\d+([eE][\-+]?\d+)?)/g,pos=[],nor=[],n=new THREE.Vector3(),r;while((r=pN.exec(data))!==null){n.set(parseFloat(r[1]),parseFloat(r[3]),parseFloat(r[5]));}while((r=pV.exec(data))!==null){pos.push(parseFloat(r[1]),parseFloat(r[3]),parseFloat(r[5]));nor.push(n.x,n.y,n.z);}g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3));return g;}};
 
-      const mesh = new THREE.Mesh(geo, skinMat);
-      mesh.castShadow    = true;
-      mesh.receiveShadow = true;
-      headGroup.add(mesh);
-      modelLoaded = true;
-      document.getElementById('loadingMsg').style.display='none';
-      animate();
-    },
-    undefined,
-    function(err){
-      console.error('STL load error', err);
-      document.getElementById('loadingMsg').innerHTML='<span style="color:#ff6b9d">⚠️ No se encontró models/asaro.stl</span>';
-    }
-  );
+/* ── LOAD MODEL ── */
+function loadAndAddSTL(url, onDone){
+  const loader = new THREE.STLLoader();
+  loader.load(url, function(geo){
+    geo.computeVertexNormals();
+    geo.computeBoundingBox();
+    const box=geo.boundingBox, size=new THREE.Vector3(), center=new THREE.Vector3();
+    box.getSize(size); box.getCenter(center);
+    const sc = 3.0/Math.max(size.x,size.y,size.z);
+    geo.translate(-center.x,-center.y,-center.z);
+    geo.scale(sc,sc,sc);
+    const mesh = new THREE.Mesh(geo,skinMat);
+    mesh.castShadow=true; mesh.receiveShadow=true;
+    if(onDone) onDone(mesh);
+  }, undefined, function(err){
+    document.getElementById('loadingMsg').innerHTML='<span style="color:#ff6b9d">⚠️ Error cargando modelo</span>';
+  });
 }
 
-/* ── OVERLAY (light bulb) ── */
+function loadDefaultSTL(){
+  loadAndAddSTL('models/asaro.stl', function(mesh){
+    while(headGroup.children.length) headGroup.remove(headGroup.children[0]);
+    headGroup.add(mesh);
+    document.getElementById('loadingMsg').style.display='none';
+    animate();
+  });
+}
+
+/* ── USER STL UPLOAD ── */
+function handleSTLFile(file){
+  if(!file || !file.name.toLowerCase().endsWith('.stl')) return;
+  document.getElementById('loadingMsg').style.display='flex';
+  document.getElementById('loadingMsg').innerHTML='<div class="spinner"></div><span>Cargando modelo...</span>';
+  const url = URL.createObjectURL(file);
+  loadAndAddSTL(url, function(mesh){
+    while(headGroup.children.length) headGroup.remove(headGroup.children[0]);
+    headGroup.add(mesh);
+    document.getElementById('loadingMsg').style.display='none';
+    document.getElementById('fileBadge').classList.add('show');
+    document.getElementById('fileName').textContent = file.name.length>22 ? file.name.slice(0,20)+'…' : file.name;
+    document.getElementById('uploadZone').style.display='none';
+  });
+}
+
+function handleDrop(e){
+  e.preventDefault();
+  document.getElementById('uploadZone').classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  handleSTLFile(file);
+}
+
+function resetModel(){
+  document.getElementById('fileBadge').classList.remove('show');
+  document.getElementById('uploadZone').style.display='block';
+  document.getElementById('stlInput').value='';
+  document.getElementById('loadingMsg').style.display='flex';
+  document.getElementById('loadingMsg').innerHTML='<div class="spinner"></div><span>Cargando modelo...</span>';
+  loadDefaultSTL();
+}
+
+/* ── OVERLAY (bulbs) ── */
 const overlay = document.createElement("canvas");
 overlay.style.cssText="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;border-radius:18px";
 wrap.appendChild(overlay);
 const oc = overlay.getContext("2d");
 
-function getLightDir(){
-  // Direct mapping: screen position -> light direction, no constraints
-  const sx = (lightPX - 0.5) * 2.8;
-  const sy = -(lightPY - 0.5) * 2.8;
-  const z  = Math.max(0.15, 1.2 - Math.sqrt(sx*sx + sy*sy) * 0.5);
-  return new THREE.Vector3(sx, sy, z).normalize();
+function getLightDir(px, py){
+  const sx=(px-0.5)*2.8, sy=-(py-0.5)*2.8;
+  const z=Math.max(0.15,1.2-Math.sqrt(sx*sx+sy*sy)*0.5);
+  return new THREE.Vector3(sx,sy,z).normalize();
 }
 
-function getLightScreenPos(){
-  // Bulb sits exactly where the user dragged it
-  return { x: lightPX * W, y: lightPY * H };
-}
-
-function drawBulb(){
+function drawBulbs(){
   overlay.width=W; overlay.height=H;
   oc.clearRect(0,0,W,H);
-  const {x,y}=getLightScreenPos();
-  const cr=lcolor.h;
-  oc.beginPath();oc.arc(x,y,17,0,Math.PI*2);
-  oc.fillStyle=`rgba(${Math.round(cr[0]*255)},${Math.round(cr[1]*255)},${Math.round(cr[2]*255)},0.92)`;
-  oc.fill();
-  oc.strokeStyle="rgba(255,255,255,0.55)";oc.lineWidth=1.5;oc.stroke();
-  oc.font="13px sans-serif";oc.textAlign="center";oc.textBaseline="middle";
-  oc.fillStyle="#000";oc.fillText("💡",x,y);
-}
 
-/* ── UPDATE LIGHTS ── */
-function updateLight(){
-  const ld = getLightDir();
-  const lp = ld.clone().multiplyScalar(6);
-  const cr = lcolor.h;
-
-  dirLight.position.copy(lp);
-  dirLight.color.setRGB(cr[0],cr[1],cr[2]);
-
-  if(lightType==="ambient"){
-    dirLight.intensity = 0;
-    ambLight.intensity = 0.85;
-    fillLight.intensity = 0.2;
-  } else if(lightType==="dramatic"){
-    dirLight.intensity = intensity * 2.2;
-    ambLight.intensity = ambient * 0.3;
-    fillLight.intensity = 0.05;
-    skinMat.shininess = 5;
-  } else if(lightType==="hard"){
-    dirLight.intensity = intensity * 2.0;
-    ambLight.intensity = ambient * 0.4;
-    fillLight.intensity = 0.1;
-    skinMat.shininess = 35;
-  } else if(lightType==="rim"){
-    dirLight.position.copy(lp.negate());
-    dirLight.intensity = intensity * 1.8;
-    ambLight.intensity = ambient * 0.3;
-    fillLight.intensity = 0.08;
-    skinMat.shininess = 25;
-  } else {
-    // soft
-    dirLight.intensity = intensity * 1.4;
-    ambLight.intensity = ambient * 0.8;
-    fillLight.intensity = 0.25;
-    skinMat.shininess = 18;
+  // Key light bulb (yellow)
+  if(document.getElementById('keyOn').checked){
+    const kx=keyPX*W, ky=keyPY*H;
+    oc.beginPath();oc.arc(kx,ky,18,0,Math.PI*2);
+    const kc=keyColor.h;
+    oc.fillStyle=`rgba(${Math.round(kc[0]*255)},${Math.round(kc[1]*255)},${Math.round(kc[2]*255)},0.95)`;
+    oc.fill();
+    oc.strokeStyle=draggingLight==='key'?"#fff":"rgba(255,255,255,0.5)";
+    oc.lineWidth=draggingLight==='key'?2.5:1.5;oc.stroke();
+    oc.font="13px sans-serif";oc.textAlign="center";oc.textBaseline="middle";
+    oc.fillStyle="#000";oc.fillText("🟡",kx,ky);
   }
 
+  // Fill light bulb (blue)
+  if(document.getElementById('fillOn').checked){
+    const fx=fillPX*W, fy=fillPY*H;
+    oc.beginPath();oc.arc(fx,fy,18,0,Math.PI*2);
+    const fc=fillColor.h;
+    oc.fillStyle=`rgba(${Math.round(fc[0]*255)},${Math.round(fc[1]*255)},${Math.round(fc[2]*255)},0.95)`;
+    oc.fill();
+    oc.strokeStyle=draggingLight==='fill'?"#fff":"rgba(255,255,255,0.5)";
+    oc.lineWidth=draggingLight==='fill'?2.5:1.5;oc.stroke();
+    oc.font="13px sans-serif";oc.textAlign="center";oc.textBaseline="middle";
+    oc.fillStyle="#000";oc.fillText("🔵",fx,fy);
+  }
+}
+
+/* ── UPDATE THREE LIGHTS ── */
+function updateLights(){
+  const keyOn  = document.getElementById('keyOn').checked;
+  const fillOn = document.getElementById('fillOn').checked;
+  keyInt   = document.getElementById('ski').value/100;
+  fillInt  = document.getElementById('sfi').value/100;
+  ambientVal= document.getElementById('sa').value/100;
+
+  // KEY
+  if(keyOn){
+    const kd = getLightDir(keyPX, keyPY);
+    keyLight3.position.copy(kd.clone().multiplyScalar(6));
+    keyLight3.color.setRGB(...keyColor.h);
+    const km = {soft:1.4,hard:2.0,rim:1.8,dramatic:2.2}[keyType]||1.4;
+    keyLight3.intensity = keyInt * km;
+    skinMat.shininess = {soft:18,hard:38,rim:28,dramatic:8}[keyType]||18;
+  } else {
+    keyLight3.intensity = 0;
+  }
+
+  // FILL
+  if(fillOn){
+    const fd = getLightDir(fillPX, fillPY);
+    fillLight3.position.copy(fd.clone().multiplyScalar(6));
+    fillLight3.color.setRGB(...fillColor.h);
+    const fm = {soft:0.9,hard:1.2,rim:1.1,dramatic:1.4}[fillType]||0.9;
+    fillLight3.intensity = fillInt * fm;
+  } else {
+    fillLight3.intensity = 0;
+  }
+
+  ambLight3.intensity = ambientVal * 0.9;
   skinMat.needsUpdate = true;
-  drawBulb();
+  drawBulbs();
 }
 
 /* ── RENDER LOOP ── */
@@ -289,7 +428,7 @@ function animate(){
   headGroup.rotation.x = rotX;
   headGroup.rotation.y = rotY;
   renderer.render(scene,camera);
-  drawBulb();
+  drawBulbs();
 }
 
 /* ── RESIZE ── */
@@ -299,13 +438,11 @@ function resize(){
   canvas.width=W; canvas.height=H;
   renderer.setSize(W,H);
   camera.aspect=1; camera.updateProjectionMatrix();
-  drawBulb();
+  drawBulbs();
 }
-window.addEventListener("resize",()=>{resize();});
+window.addEventListener("resize",resize);
 
 /* ── DRAG ── */
-let dragging=false, headDrag=false, hx0=0, hy0=0, rx0=0, ry0=0;
-
 function getXY(e){
   const r=wrap.getBoundingClientRect();
   const cl=e.touches?e.touches[0]:e;
@@ -314,19 +451,28 @@ function getXY(e){
 
 function onDown(e){
   const {x,y}=getXY(e);
-  const {x:lx,y:ly}=getLightScreenPos();
-  if(Math.hypot(x-lx,y-ly)<28){dragging=true;}
-  else{headDrag=true;hx0=x;hy0=y;rx0=rotX;ry0=rotY;}
+  const kOn=document.getElementById('keyOn').checked;
+  const fOn=document.getElementById('fillOn').checked;
+  // Check key bulb
+  if(kOn && Math.hypot(x-keyPX*W, y-keyPY*H)<26){ draggingLight='key'; e.preventDefault(); return; }
+  // Check fill bulb
+  if(fOn && Math.hypot(x-fillPX*W, y-fillPY*H)<26){ draggingLight='fill'; e.preventDefault(); return; }
+  // Head drag
+  headDrag=true; hx0=x; hy0=y; rx0=rotX; ry0=rotY;
   e.preventDefault();
 }
+
 function onMove(e){
-  if(!dragging&&!headDrag)return;
+  if(!draggingLight && !headDrag) return;
   const {x,y}=getXY(e);
-  if(dragging){
-    // Store light as normalized screen position — free movement, no constraint
-    lightPX = Math.max(0, Math.min(1, x / W));
-    lightPY = Math.max(0, Math.min(1, y / H));
-    updateLight();
+  if(draggingLight==='key'){
+    keyPX=Math.max(0,Math.min(1,x/W));
+    keyPY=Math.max(0,Math.min(1,y/H));
+    updateLights();
+  } else if(draggingLight==='fill'){
+    fillPX=Math.max(0,Math.min(1,x/W));
+    fillPY=Math.max(0,Math.min(1,y/H));
+    updateLights();
   } else if(headDrag){
     rotY=ry0+(x-hx0)*0.009;
     rotX=rx0+(y-hy0)*0.009;
@@ -334,7 +480,8 @@ function onMove(e){
   }
   e.preventDefault();
 }
-function onUp(){dragging=false;headDrag=false;}
+
+function onUp(){ draggingLight=null; headDrag=false; }
 
 canvas.addEventListener("mousedown",onDown);
 window.addEventListener("mousemove",onMove);
@@ -343,40 +490,57 @@ canvas.addEventListener("touchstart",onDown,{passive:false});
 window.addEventListener("touchmove",onMove,{passive:false});
 window.addEventListener("touchend",onUp);
 
-/* ── CONTROLS UI ── */
-const typesEl=document.getElementById("ltypes");
-LTYPES.forEach(t=>{
-  const b=document.createElement("button");
-  b.textContent=t.charAt(0).toUpperCase()+t.slice(1);
-  b.className="light-pill"+(t===lightType?" active":"");
-  b.onclick=()=>{
-    lightType=t;
-    document.querySelectorAll(".light-pill").forEach(x=>x.classList.remove("active"));
-    b.classList.add("active");
-    document.getElementById("tipBox").textContent="💡 "+TIPS[t];
-    updateLight();
-  };
-  typesEl.appendChild(b);
-});
+/* ── TABS ── */
+function selectLightTab(tab){
+  activeLightTab=tab;
+  document.getElementById('tabKey').className='light-tab'+(tab==='key'?' key-active':'');
+  document.getElementById('tabFill').className='light-tab'+(tab==='fill'?' fill-active':'');
+  document.getElementById('panelKey').className='light-panel'+(tab==='key'?' show':'');
+  document.getElementById('panelFill').className='light-panel'+(tab==='fill'?' show':'');
+}
 
-const colorsEl=document.getElementById("lcolors");
-LCOLORS.forEach((c,i)=>{
-  const s=document.createElement("div");
-  s.className="swatch"+(i===0?" active":"");
-  s.style.background=`rgb(${Math.round(c.h[0]*255)},${Math.round(c.h[1]*255)},${Math.round(c.h[2]*255)})`;
-  s.title=c.n;
-  s.onclick=()=>{
-    lcolor=c;
-    document.querySelectorAll(".swatch").forEach(x=>x.classList.remove("active"));
-    s.classList.add("active");
-    updateLight();
-  };
-  colorsEl.appendChild(s);
-});
+/* ── BUILD PILL + COLOR UIs ── */
+function buildPills(containerId, types, currentType, activeClass, onChange){
+  const el=document.getElementById(containerId);
+  el.innerHTML='';
+  types.forEach(t=>{
+    const b=document.createElement('button');
+    b.textContent=LTYPE_LABELS[t];
+    b.className='lpill'+(t===currentType?' '+activeClass:'');
+    b.onclick=()=>{
+      el.querySelectorAll('.lpill').forEach(x=>x.classList.remove(activeClass));
+      b.classList.add(activeClass);
+      onChange(t);
+    };
+    el.appendChild(b);
+  });
+}
+
+function buildSwatches(containerId, colors, activeIdx, onChange){
+  const el=document.getElementById(containerId);
+  el.innerHTML='';
+  colors.forEach((c,i)=>{
+    const s=document.createElement('div');
+    s.className='sw'+(i===activeIdx?' active':'');
+    s.style.background=`rgb(${Math.round(c.h[0]*255)},${Math.round(c.h[1]*255)},${Math.round(c.h[2]*255)})`;
+    s.title=c.n;
+    s.onclick=()=>{
+      el.querySelectorAll('.sw').forEach(x=>x.classList.remove('active'));
+      s.classList.add('active');
+      onChange(c);
+    };
+    el.appendChild(s);
+  });
+}
 
 /* ── INIT ── */
+buildPills('keyTypes',  LTYPES, keyType,  'active-key',  t=>{ keyType=t;  document.getElementById('tipBox').textContent='💡 '+TIPS[t]; updateLights(); });
+buildPills('fillTypes', LTYPES, fillType, 'active-fill', t=>{ fillType=t; updateLights(); });
+buildSwatches('keyColors',  COLORS,      0, c=>{ keyColor=c;  updateLights(); });
+buildSwatches('fillColors', FILL_COLORS, 0, c=>{ fillColor=c; updateLights(); });
+
 resize();
-loadSTL();
+loadDefaultSTL();
 </script>
 </body>
 </html>
