@@ -16,9 +16,10 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
 .b3{width:300px;height:300px;background:var(--cyan);top:40%;left:50%;animation-delay:-10s;}
 @keyframes drift{from{transform:translate(0,0)scale(1);}to{transform:translate(40px,30px)scale(1.1);}}
 nav{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.2rem;border-bottom:1px solid var(--border);background:rgba(15,14,23,.85);backdrop-filter:blur(12px);}
-.nav-logo{font-family:'Fredoka One',cursive;font-size:1.4rem;background:linear-gradient(135deg,var(--pink),var(--yellow));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;}.nav-logo img{height:38px;width:auto;display:block;}.nav-logo-text{font-family:'Fredoka One',cursive;font-size:1.05rem;background:linear-gradient(135deg,var(--pink),var(--yellow));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}@media(max-width:480px){.nav-logo img{height:32px;}.nav-logo-text{display:none;}}
 .nav-links{display:flex;gap:.5rem;}
-.nav-btn{font-family:'Nunito',sans-serif;font-size:.82rem;font-weight:800;padding:6px 14px;border-radius:50px;border:2px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;text-decoration:none;transition:all .2s;}@media(max-width:400px){.nav-btn{font-size:.72rem;padding:5px 10px;}}
+.nav-btn{font-family:'Nunito',sans-serif;font-size:.82rem;font-weight:800;padding:6px 14px;border-radius:50px;border:2px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;text-decoration:none;transition:all .2s;}
+@media(max-width:400px){.nav-btn{font-size:.72rem;padding:5px 10px;}}
 .nav-btn:hover{border-color:var(--purple);color:var(--purple);background:#c77dff15;}
 .nav-btn.active{background:var(--purple);border-color:var(--purple);color:#fff;}
 .hero{position:relative;z-index:1;text-align:center;padding:2rem 1rem 1.2rem;}
@@ -26,11 +27,13 @@ nav{position:relative;z-index:10;display:flex;align-items:center;justify-content
 @keyframes wobble{0%,100%{transform:rotate(-5deg)scale(1);}50%{transform:rotate(5deg)scale(1.05);}}
 .hero h1{font-family:'Fredoka One',cursive;font-size:clamp(2.5rem,6vw,4rem);background:linear-gradient(135deg,var(--pink) 0%,var(--yellow) 50%,var(--cyan) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.5rem;line-height:1.1;}
 .hero p{font-size:1.05rem;color:var(--muted);font-weight:600;max-width:480px;margin:0 auto;}
+.combo-counter{display:inline-block;margin-top:.6rem;font-family:'Nunito',sans-serif;font-size:.72rem;font-weight:800;color:var(--purple);background:#c77dff15;border:1px solid #c77dff33;padding:4px 14px;border-radius:50px;letter-spacing:.03em;}
 main{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:1rem 1rem 3rem;}
-.slots-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-bottom:1.5rem;}@media(max-width:600px){.slots-row{grid-template-columns:1fr;gap:.5rem;}.slot-value{font-size:1.2rem;}}
+.slots-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-bottom:1.5rem;}
+@media(max-width:600px){.slots-row{grid-template-columns:1fr;gap:.5rem;}.slot-value{font-size:1.2rem;}}
 .slot-card{background:var(--card);border:2px solid var(--border);border-radius:20px;padding:1.2rem;text-align:center;transition:border-color .2s,transform .2s;}
 .slot-card:hover{transform:translateY(-3px);}
-.slot-label{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;margin-bottom:.8rem;display:flex;align-items:center;justify-content:center;gap:5px;}
+.slot-label{font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.8rem;display:flex;align-items:center;justify-content:center;gap:5px;text-align:center;line-height:1.3;}
 .slot-dot{width:8px;height:8px;border-radius:50%;}
 .slot-value{font-family:'Fredoka One',cursive;font-size:1.4rem;line-height:1.2;min-height:2.5rem;display:flex;align-items:center;justify-content:center;transition:all .3s;}
 .slot-card:nth-child(1){border-color:#ff6b9d44;}
@@ -45,19 +48,25 @@ main{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:1rem 1rem
 .slot-card:nth-child(3) .slot-label{color:var(--cyan);}
 .slot-card:nth-child(3) .slot-dot{background:var(--cyan);}
 .slot-card:nth-child(3) .slot-value{color:var(--cyan);}
-.generate-wrap{text-align:center;margin-bottom:1.8rem;}@media(max-width:500px){.btn-generate{width:100%;padding:14px 20px;font-size:1.1rem;}}
+.generate-wrap{display:flex;gap:10px;justify-content:center;margin-bottom:1.8rem;flex-wrap:wrap;}
+@media(max-width:500px){.generate-wrap{flex-direction:column;}.btn-generate,.btn-export{width:100%;}}
 .btn-generate{font-family:'Fredoka One',cursive;font-size:1.3rem;letter-spacing:.04em;padding:16px 52px;border-radius:50px;border:none;background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;cursor:pointer;box-shadow:0 8px 32px #ff6b9d44,0 2px 8px #0008;transition:transform .15s,box-shadow .15s;position:relative;overflow:hidden;}
 .btn-generate::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--yellow),var(--orange));opacity:0;transition:opacity .3s;}
 .btn-generate:hover{transform:scale(1.06);box-shadow:0 12px 40px #ff6b9d66;}
 .btn-generate:hover::after{opacity:1;}
 .btn-generate span{position:relative;z-index:1;}
 .btn-generate:active{transform:scale(.97);}
+.btn-export{font-family:'Fredoka One',cursive;font-size:1rem;letter-spacing:.02em;padding:16px 28px;border-radius:50px;border:2px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;transition:all .2s;display:none;align-items:center;gap:8px;}
+.btn-export.show{display:inline-flex;}
+.btn-export:hover{border-color:var(--cyan);color:var(--cyan);background:#06d6a012;}
+.btn-export:disabled{opacity:.5;cursor:wait;}
 .result-card{background:var(--card);border:2px solid var(--border);border-radius:24px;padding:2rem;display:none;animation:popIn .4s cubic-bezier(.34,1.56,.64,1);}
 .result-card.show{display:block;}
 @keyframes popIn{from{opacity:0;transform:scale(.9)translateY(20px);}to{opacity:1;transform:scale(1)translateY(0);}}
 .result-header{display:flex;align-items:center;gap:10px;margin-bottom:1.2rem;}
 .result-tag{font-size:.7rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:4px 12px;border-radius:50px;}
-.result-content{display:grid;grid-template-columns:auto 1fr;gap:1.2rem;align-items:start;}@media(max-width:500px){.result-content{grid-template-columns:1fr;}.char-portrait{width:80px;height:80px;font-size:2.8rem;margin:0 auto;}}
+.result-content{display:grid;grid-template-columns:auto 1fr;gap:1.2rem;align-items:start;}
+@media(max-width:500px){.result-content{grid-template-columns:1fr;}.char-portrait{width:80px;height:80px;font-size:2.8rem;margin:0 auto;}}
 .char-portrait{width:120px;height:120px;border-radius:16px;background:linear-gradient(135deg,#2e2b4a,#1a1828);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:4rem;flex-shrink:0;}
 .result-details h2{font-family:'Fredoka One',cursive;font-size:1.8rem;margin-bottom:.4rem;}
 .result-badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:.8rem;}
@@ -73,12 +82,16 @@ main{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:1rem 1rem
 .inspo-chip .ic-type{font-size:.7rem;color:var(--muted);}
 .spinning{animation:spinY .4s ease;}
 @keyframes spinY{0%{transform:rotateX(90deg);opacity:0;}100%{transform:rotateX(0deg);opacity:1;}}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--card);border:2px solid var(--cyan);color:var(--cyan);font-family:'Fredoka One',cursive;font-size:.9rem;padding:12px 24px;border-radius:50px;opacity:0;pointer-events:none;transition:all .3s;z-index:100;box-shadow:0 8px 24px #0008;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
 <div class="bubbles"><div class="bubble b1"></div><div class="bubble b2"></div><div class="bubble b3"></div></div>
 <nav>
-  <a href="index.html" class="nav-logo">🎨 ArtStudio</a>
+  <a href="https://www.instagram.com/mokokodraws/" target="_blank" rel="noopener" class="nav-logo"><img src="assets-brand/logo.png" alt="Mokoko Drawing Club logo"><span class="nav-logo-text">ArtStudio</span></a>
   <div class="nav-links">
     <a href="index.html"    class="nav-btn active">🧙 Caldero</a>
     <a href="lighting.html" class="nav-btn">💡 Iluminación</a>
@@ -88,15 +101,17 @@ main{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:1rem 1rem
   <span class="cauldron-emoji">🧙‍♂️</span>
   <h1>Caldero Mágico</h1>
   <p>Lanza los dados y descubre tu próximo personaje épico</p>
+  <div class="combo-counter" id="comboCounter">✨ +125,000 combinaciones posibles</div>
 </div>
 <main>
   <div class="slots-row">
-    <div class="slot-card"><div class="slot-label"><span class="slot-dot"></span>Personaje</div><div class="slot-value" id="slotChar">???</div></div>
-    <div class="slot-card"><div class="slot-label"><span class="slot-dot"></span>Personalidad</div><div class="slot-value" id="slotPersonality">???</div></div>
-    <div class="slot-card"><div class="slot-label"><span class="slot-dot"></span>Contexto</div><div class="slot-value" id="slotContext">???</div></div>
+    <div class="slot-card"><div class="slot-label"><span class="slot-dot"></span>01 · Ingrediente Base</div><div class="slot-value" id="slotChar">???</div></div>
+    <div class="slot-card"><div class="slot-label"><span class="slot-dot"></span>02 · La Especia Secreta</div><div class="slot-value" id="slotPersonality">???</div></div>
+    <div class="slot-card"><div class="slot-label"><span class="slot-dot"></span>03 · La Poción que lo Transforma Todo</div><div class="slot-value" id="slotContext">???</div></div>
   </div>
   <div class="generate-wrap">
     <button class="btn-generate" onclick="generate()"><span>✨ ¡Tirar los dados!</span></button>
+    <button class="btn-export" id="exportBtn" onclick="exportToStory()">📲 <span>Exportar para Stories</span></button>
   </div>
   <div class="result-card" id="resultCard">
     <div class="result-header"><span class="result-tag" style="background:#c77dff22;color:#c77dff;">PERSONAJE GENERADO</span></div>
@@ -114,28 +129,66 @@ main{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:1rem 1rem
     <div class="inspo-grid" id="inspoGrid"></div>
   </div>
 </main>
+
+<div class="toast" id="toast">✅ PNG descargado — listo para Stories</div>
+
+<!-- Hidden canvas used to render the 1080x1920 export -->
+<canvas id="exportCanvas" width="1080" height="1920" style="display:none"></canvas>
+
 <script>
-const CHARACTERS=[{name:"Vampiro",emoji:"🧛",color:"#ff6b9d"},{name:"Bruja",emoji:"🧙‍♀️",color:"#c77dff"},{name:"Robot",emoji:"🤖",color:"#4cc9f0"},{name:"Dragón",emoji:"🐉",color:"#ff9a3c"},{name:"Elfo",emoji:"🧝",color:"#06d6a0"},{name:"Pirata",emoji:"🏴‍☠️",color:"#ffd166"},{name:"Fantasma",emoji:"👻",color:"#c8b6ff"},{name:"Cazador",emoji:"🏹",color:"#ff9a3c"},{name:"Mago",emoji:"🧝‍♂️",color:"#c77dff"},{name:"Cyborg",emoji:"🦾",color:"#4cc9f0"},{name:"Hada",emoji:"🧚",color:"#ff6b9d"},{name:"Esqueleto",emoji:"💀",color:"#e0e0e0"},{name:"Sirena",emoji:"🧜",color:"#06d6a0"},{name:"Demonio",emoji:"😈",color:"#ff4444"},{name:"Ángel Caído",emoji:"😇",color:"#ffd166"},{name:"Alien",emoji:"👽",color:"#06d6a0"}];
-const PERSONALITIES=[{name:"Tímido",color:"#c77dff"},{name:"Sarcástico",color:"#ff6b9d"},{name:"Heroico",color:"#ffd166"},{name:"Caótico",color:"#ff9a3c"},{name:"Melancólico",color:"#4cc9f0"},{name:"Arrogante",color:"#ff6b9d"},{name:"Curioso",color:"#06d6a0"},{name:"Misterioso",color:"#c77dff"},{name:"Adorable",color:"#ff6b9d"},{name:"Traicionero",color:"#ff4444"},{name:"Sabio",color:"#ffd166"},{name:"Ingenuo",color:"#06d6a0"},{name:"Impulsivo",color:"#ff9a3c"},{name:"Calculador",color:"#4cc9f0"}];
-const CONTEXTS=[{name:"Apocalipsis Zombie",color:"#06d6a0"},{name:"Edad Media",color:"#ffd166"},{name:"Ciberpunk 2099",color:"#4cc9f0"},{name:"Escuela de Magia",color:"#c77dff"},{name:"Espacio Profundo",color:"#4cc9f0"},{name:"Posguerra Nuclear",color:"#ff9a3c"},{name:"Olimpo Griego",color:"#ffd166"},{name:"Tokyo Neon",color:"#ff6b9d"},{name:"Selva Encantada",color:"#06d6a0"},{name:"Desierto Mágico",color:"#ff9a3c"},{name:"Submundo Steampunk",color:"#ffd166"},{name:"Colonia en Marte",color:"#ff6b9d"}];
-const BIOS=[(c,p,ctx)=>`Un ${c} de naturaleza ${p.toLowerCase()} que sobrevivió al caos del ${ctx}. Sus cicatrices cuentan historias que pocos se atreven a escuchar.`,(c,p,ctx)=>`Nadie esperaba que un ${c} ${p.toLowerCase()} se convirtiera en la leyenda del ${ctx}. Y sin embargo, aquí está.`,(c,p,ctx)=>`En el ${ctx}, ser ${p.toLowerCase()} es una maldición. Ser ${c} es otra. Este personaje carga con las dos.`,(c,p,ctx)=>`El ${ctx} lo cambió todo. Un ${c} que alguna vez fue ${p.toLowerCase()} ahora debe decidir qué lado de la historia quiere contar.`];
+/* ── DATA POOLS ──
+   22 characters x 22 personalities x 22 contexts = 10,648 combinations
+*/
+const CHARACTERS=[{name:"Vampiro",emoji:"🧛",color:"#ff6b9d"},{name:"Bruja",emoji:"🧙‍♀️",color:"#c77dff"},{name:"Robot",emoji:"🤖",color:"#4cc9f0"},{name:"Dragón",emoji:"🐉",color:"#ff9a3c"},{name:"Elfo",emoji:"🧝",color:"#06d6a0"},{name:"Pirata",emoji:"🏴‍☠️",color:"#ffd166"},{name:"Fantasma",emoji:"👻",color:"#c8b6ff"},{name:"Cazador",emoji:"🏹",color:"#ff9a3c"},{name:"Mago",emoji:"🧝‍♂️",color:"#c77dff"},{name:"Cyborg",emoji:"🦾",color:"#4cc9f0"},{name:"Hada",emoji:"🧚",color:"#ff6b9d"},{name:"Esqueleto",emoji:"💀",color:"#e0e0e0"},{name:"Sirena",emoji:"🧜",color:"#06d6a0"},{name:"Demonio",emoji:"😈",color:"#ff4444"},{name:"Ángel Caído",emoji:"😇",color:"#ffd166"},{name:"Alien",emoji:"👽",color:"#06d6a0"},{name:"Ninja",emoji:"🥷",color:"#9b97b8"},{name:"Samurái",emoji:"⚔️",color:"#ff6b9d"},{name:"Vikingo",emoji:"🪓",color:"#4cc9f0"},{name:"Gólem",emoji:"🗿",color:"#c8925a"},{name:"Licántropo",emoji:"🐺",color:"#7a4825"},{name:"Centauro",emoji:"🏇",color:"#ff9a3c"},{name:"Astronauta",emoji:"🧑‍🚀",color:"#4cc9f0"},{name:"Panadero",emoji:"🥖",color:"#ffd166"},{name:"Herrero",emoji:"🔨",color:"#ff9a3c"},{name:"Bibliotecario",emoji:"📚",color:"#c77dff"},{name:"Detective",emoji:"🕵️",color:"#9b97b8"},{name:"Domador de Dragones",emoji:"🐲",color:"#ff9a3c"},{name:"Alquimista",emoji:"⚗️",color:"#06d6a0"},{name:"Bardo",emoji:"🎻",color:"#ff6b9d"},{name:"Guardián del Bosque",emoji:"🌲",color:"#06d6a0"},{name:"Cazafortunas",emoji:"💰",color:"#ffd166"},{name:"Inventor",emoji:"🛠️",color:"#4cc9f0"},{name:"Sacerdotisa",emoji:"🕯️",color:"#c77dff"},{name:"Mercenario",emoji:"🗡️",color:"#ff4444"},{name:"Curandera",emoji:"🌿",color:"#06d6a0"},{name:"Explorador",emoji:"🧭",color:"#ffd166"},{name:"Hechicero Oscuro",emoji:"🔮",color:"#9b97b8"},{name:"Princesa Guerrera",emoji:"👸",color:"#ff6b9d"},{name:"Capitán Espacial",emoji:"🚀",color:"#4cc9f0"},{name:"Granjero",emoji:"🌾",color:"#ffd166"},{name:"Domador de Bestias",emoji:"🦁",color:"#ff9a3c"},{name:"Espadachín",emoji:"🤺",color:"#c77dff"},{name:"Chamán",emoji:"🪶",color:"#06d6a0"},{name:"Relojero",emoji:"⏰",color:"#c8925a"},{name:"Bruja del Mar",emoji:"🌊",color:"#4cc9f0"},{name:"Cartógrafo",emoji:"🗺️",color:"#ffd166"},{name:"Domadora de Tormentas",emoji:"⛈️",color:"#4cc9f0"},{name:"Errante Dimensional",emoji:"🌀",color:"#c77dff"},{name:"Guardián de Tumbas",emoji:"⚱️",color:"#7a4825"}];
+
+const PERSONALITIES=[{name:"Tímido",color:"#c77dff"},{name:"Sarcástico",color:"#ff6b9d"},{name:"Heroico",color:"#ffd166"},{name:"Caótico",color:"#ff9a3c"},{name:"Melancólico",color:"#4cc9f0"},{name:"Arrogante",color:"#ff6b9d"},{name:"Curioso",color:"#06d6a0"},{name:"Misterioso",color:"#c77dff"},{name:"Adorable",color:"#ff6b9d"},{name:"Traicionero",color:"#ff4444"},{name:"Sabio",color:"#ffd166"},{name:"Ingenuo",color:"#06d6a0"},{name:"Impulsivo",color:"#ff9a3c"},{name:"Calculador",color:"#4cc9f0"},{name:"Leal",color:"#06d6a0"},{name:"Vengativo",color:"#ff4444"},{name:"Soñador",color:"#c77dff"},{name:"Estoico",color:"#9b97b8"},{name:"Bromista",color:"#ffd166"},{name:"Protector",color:"#4cc9f0"},{name:"Solitario",color:"#7a4825"},{name:"Carismático",color:"#ff6b9d"},{name:"Torpe",color:"#ffd166"},{name:"Hiperactivo",color:"#ff9a3c"},{name:"Obsesivo",color:"#ff4444"},{name:"Generoso",color:"#06d6a0"},{name:"Despistado",color:"#c8b6ff"},{name:"Manipulador",color:"#9b97b8"},{name:"Optimista",color:"#ffd166"},{name:"Pesimista",color:"#4cc9f0"},{name:"Valiente",color:"#ff9a3c"},{name:"Cobarde",color:"#c77dff"},{name:"Perfeccionista",color:"#4cc9f0"},{name:"Rebelde",color:"#ff4444"},{name:"Paciente",color:"#06d6a0"},{name:"Egoísta",color:"#ff6b9d"},{name:"Compasivo",color:"#06d6a0"},{name:"Excéntrico",color:"#c77dff"},{name:"Frío",color:"#4cc9f0"},{name:"Apasionado",color:"#ff4444"},{name:"Distraído",color:"#c8b6ff"},{name:"Disciplinado",color:"#9b97b8"},{name:"Inseguro",color:"#c77dff"},{name:"Confiado",color:"#ffd166"},{name:"Nostálgico",color:"#7a4825"},{name:"Curiosamente Letal",color:"#ff4444"},{name:"Tierno por fuera, oscuro por dentro",color:"#9b97b8"},{name:"Adicto al riesgo",color:"#ff9a3c"},{name:"Filosófico",color:"#4cc9f0"},{name:"Imprevisible",color:"#c77dff"}];
+
+const CONTEXTS=[{name:"Apocalipsis Zombie",color:"#06d6a0"},{name:"Edad Media",color:"#ffd166"},{name:"Ciberpunk 2099",color:"#4cc9f0"},{name:"Escuela de Magia",color:"#c77dff"},{name:"Espacio Profundo",color:"#4cc9f0"},{name:"Posguerra Nuclear",color:"#ff9a3c"},{name:"Olimpo Griego",color:"#ffd166"},{name:"Tokyo Neon",color:"#ff6b9d"},{name:"Selva Encantada",color:"#06d6a0"},{name:"Desierto Mágico",color:"#ff9a3c"},{name:"Submundo Steampunk",color:"#ffd166"},{name:"Colonia en Marte",color:"#ff6b9d"},{name:"Reino Sumergido",color:"#4cc9f0"},{name:"Torneo Real",color:"#c77dff"},{name:"Imperio Galáctico",color:"#4cc9f0"},{name:"Bosque Maldito",color:"#7a4825"},{name:"Academia de Héroes",color:"#ffd166"},{name:"Ciudad Flotante",color:"#06d6a0"},{name:"Dimensión Paralela",color:"#c77dff"},{name:"Guerra de Clanes",color:"#ff4444"},{name:"Carnaval Eterno",color:"#ff9a3c"},{name:"Laberinto Infinito",color:"#9b97b8"},{name:"Mercado Negro Mágico",color:"#c77dff"},{name:"Castillo Embrujado",color:"#7a4825"},{name:"Estación Espacial Abandonada",color:"#4cc9f0"},{name:"Festival de la Cosecha",color:"#ffd166"},{name:"Catacumbas Ancestrales",color:"#7a4825"},{name:"Reino de Hielo Eterno",color:"#4cc9f0"},{name:"Volcán Sagrado",color:"#ff4444"},{name:"Biblioteca Infinita",color:"#c77dff"},{name:"Arena de Gladiadores",color:"#ff9a3c"},{name:"Pueblo Fantasma",color:"#9b97b8"},{name:"Universidad de lo Oculto",color:"#c77dff"},{name:"Crucero Interdimensional",color:"#4cc9f0"},{name:"Feria de Monstruos",color:"#06d6a0"},{name:"Corte de un Rey Caído",color:"#ffd166"},{name:"Santuario Prohibido",color:"#7a4825"},{name:"Subasta de Reliquias Malditas",color:"#c77dff"},{name:"Tormenta Eterna",color:"#4cc9f0"},{name:"Isla que Nadie Encuentra Dos Veces",color:"#06d6a0"},{name:"Circo de Medianoche",color:"#ff6b9d"},{name:"Frontera entre Mundos",color:"#c77dff"},{name:"Refugio Postapocalíptico",color:"#ff9a3c"},{name:"Templo Hundido",color:"#4cc9f0"},{name:"Reino de los Sueños",color:"#c8b6ff"},{name:"Coliseo de las Sombras",color:"#9b97b8"},{name:"Estación de Tren Inexistente",color:"#7a4825"},{name:"Boda Real Interrumpida",color:"#ffd166"},{name:"Expedición al Fin del Mundo",color:"#06d6a0"},{name:"Última Noche antes del Eclipse",color:"#4cc9f0"}];
+
+const BIOS=[
+(c,p,ctx)=>`Un ${c} de naturaleza ${p.toLowerCase()} que sobrevivió al caos del ${ctx}. Sus cicatrices cuentan historias que pocos se atreven a escuchar.`,
+(c,p,ctx)=>`Nadie esperaba que un ${c} ${p.toLowerCase()} se convirtiera en la leyenda del ${ctx}. Y sin embargo, aquí está.`,
+(c,p,ctx)=>`En el ${ctx}, ser ${p.toLowerCase()} es una maldición. Ser ${c} es otra. Este personaje carga con las dos.`,
+(c,p,ctx)=>`El ${ctx} lo cambió todo. Un ${c} que alguna vez fue ${p.toLowerCase()} ahora debe decidir qué lado de la historia quiere contar.`,
+(c,p,ctx)=>`Conocido en el ${ctx} simplemente como "el ${c}", su actitud ${p.toLowerCase()} esconde un pasado que nadie ha logrado descifrar.`,
+(c,p,ctx)=>`Sobrevivir al ${ctx} no fue fácil para un ${c} tan ${p.toLowerCase()}. Pero las leyendas rara vez nacen del camino fácil.`,
+(c,p,ctx)=>`Antes del ${ctx}, este ${c} era solo otro rostro en la multitud. Su naturaleza ${p.toLowerCase()} lo cambió todo.`,
+(c,p,ctx)=>`Dicen que un ${c} ${p.toLowerCase()} no puede sobrevivir al ${ctx}. Este personaje está decidido a demostrar lo contrario.`,
+(c,p,ctx)=>`En las crónicas del ${ctx} aparece una sola línea sobre él: "${c} ${p.toLowerCase()}, destino desconocido."`,
+(c,p,ctx)=>`Cada quien recuerda al ${c} de forma distinta: para algunos es ${p.toLowerCase()}, para otros es el último testigo del ${ctx}.`,
+];
+
 function pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
 function animate(el){el.classList.remove('spinning');void el.offsetWidth;el.classList.add('spinning');setTimeout(()=>el.classList.remove('spinning'),400);}
+
+let currentChar=null, currentPers=null, currentCtx=null, currentBio='';
+
 function generate(){
   const char=pick(CHARACTERS),pers=pick(PERSONALITIES),ctx=pick(CONTEXTS);
+  applyResult(char,pers,ctx);
+}
+
+function applyResult(char,pers,ctx){
+  currentChar=char;currentPers=pers;currentCtx=ctx;
   const s1=document.getElementById('slotChar'),s2=document.getElementById('slotPersonality'),s3=document.getElementById('slotContext');
   s1.textContent=char.emoji+' '+char.name;s2.textContent=pers.name;s3.textContent=ctx.name;
   s1.style.color=char.color;s2.style.color=pers.color;s3.style.color=ctx.color;
   animate(s1);animate(s2);animate(s3);
   const bio=pick(BIOS)(char.name,pers.name,ctx.name);
+  currentBio=bio;
   const card=document.getElementById('resultCard');card.classList.remove('show');void card.offsetWidth;
   document.getElementById('charPortrait').textContent=char.emoji;
   document.getElementById('resultName').textContent=char.name+' '+pers.name;
   document.getElementById('resultName').style.color=char.color;
   document.getElementById('resultBadges').innerHTML=`<span class="badge-pill" style="background:${char.color}22;color:${char.color}">${char.name}</span><span class="badge-pill" style="background:${pers.color}22;color:${pers.color}">${pers.name}</span><span class="badge-pill" style="background:${ctx.color}22;color:${ctx.color}">${ctx.name}</span>`;
   document.getElementById('resultBio').textContent=bio;
-  card.classList.add('show');buildInspo();
+  card.classList.add('show');
+  buildInspo();
+  document.getElementById('exportBtn').classList.add('show');
 }
+
+function applyInspo(char,pers,ctx){ applyResult(char,pers,ctx); }
+
 function buildInspo(){
   const grid=document.getElementById('inspoGrid');grid.innerHTML='';
   for(let i=0;i<8;i++){
@@ -145,16 +198,147 @@ function buildInspo(){
     div.onclick=()=>applyInspo(c,p,x);grid.appendChild(div);
   }
 }
-function applyInspo(char,pers,ctx){
-  const s1=document.getElementById('slotChar'),s2=document.getElementById('slotPersonality'),s3=document.getElementById('slotContext');
-  s1.textContent=char.emoji+' '+char.name;s1.style.color=char.color;s2.textContent=pers.name;s2.style.color=pers.color;s3.textContent=ctx.name;s3.style.color=ctx.color;
-  animate(s1);animate(s2);animate(s3);
-  const bio=pick(BIOS)(char.name,pers.name,ctx.name);
-  document.getElementById('charPortrait').textContent=char.emoji;document.getElementById('resultName').textContent=char.name+' '+pers.name;document.getElementById('resultName').style.color=char.color;
-  document.getElementById('resultBadges').innerHTML=`<span class="badge-pill" style="background:${char.color}22;color:${char.color}">${char.name}</span><span class="badge-pill" style="background:${pers.color}22;color:${pers.color}">${pers.name}</span><span class="badge-pill" style="background:${ctx.color}22;color:${ctx.color}">${ctx.name}</span>`;
-  document.getElementById('resultBio').textContent=bio;
-  const card=document.getElementById('resultCard');card.classList.remove('show');void card.offsetWidth;card.classList.add('show');
+
+/* ── EXPORT TO INSTAGRAM STORY (1080x1920 PNG) ── */
+function wrapText(ctx,text,x,y,maxWidth,lineHeight){
+  const words=text.split(' ');
+  let line='';
+  let lines=[];
+  for(let n=0;n<words.length;n++){
+    const testLine=line+words[n]+' ';
+    if(ctx.measureText(testLine).width>maxWidth && n>0){
+      lines.push(line.trim());
+      line=words[n]+' ';
+    } else {
+      line=testLine;
+    }
+  }
+  lines.push(line.trim());
+  lines.forEach((l,i)=>ctx.fillText(l,x,y+i*lineHeight));
+  return lines.length;
 }
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+function exportToStory(){
+  if(!currentChar){ showToast('⚠️ Genera un personaje primero'); return; }
+  const btn=document.getElementById('exportBtn');
+  btn.disabled=true;
+
+  const canvas=document.getElementById('exportCanvas');
+  const ctx=canvas.getContext('2d');
+  const W=1080,H=1920;
+  ctx.clearRect(0,0,W,H);
+
+  // Background gradient
+  const bg=ctx.createLinearGradient(0,0,W,H);
+  bg.addColorStop(0,'#0f0e17');
+  bg.addColorStop(0.5,'#1a1828');
+  bg.addColorStop(1,'#0f0e17');
+  ctx.fillStyle=bg;
+  ctx.fillRect(0,0,W,H);
+
+  // Decorative blurred bubbles (simulated with radial gradients)
+  function bubble(x,y,r,color){
+    const g=ctx.createRadialGradient(x,y,0,x,y,r);
+    g.addColorStop(0,color+'33');
+    g.addColorStop(1,color+'00');
+    ctx.fillStyle=g;
+    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();
+  }
+  bubble(150,200,400,'#c77dff');
+  bubble(950,300,350,'#ff6b9d');
+  bubble(540,1700,450,'#06d6a0');
+
+  // Top branding
+  ctx.textAlign='center';
+  ctx.font='700 34px Nunito, sans-serif';
+  ctx.fillStyle='#9b97b8';
+  ctx.fillText('🎨 ArtStudio · Caldero Mágico', W/2, 140);
+
+  // Title wobble emoji
+  ctx.font='160px sans-serif';
+  ctx.fillText('🧙‍♂️', W/2, 360);
+
+  // Character emoji big portrait
+  ctx.save();
+  const portraitY=560, portraitR=190;
+  const grad=ctx.createLinearGradient(W/2-portraitR,portraitY-portraitR,W/2+portraitR,portraitY+portraitR);
+  grad.addColorStop(0,'#2e2b4a');
+  grad.addColorStop(1,'#1a1828');
+  ctx.fillStyle=grad;
+  ctx.beginPath();
+  ctx.roundRect ? ctx.roundRect(W/2-portraitR,portraitY-portraitR,portraitR*2,portraitR*2,48) : ctx.rect(W/2-portraitR,portraitY-portraitR,portraitR*2,portraitR*2);
+  ctx.fill();
+  ctx.strokeStyle='#2e2b4a';ctx.lineWidth=4;ctx.stroke();
+  ctx.font='220px sans-serif';
+  ctx.textBaseline='middle';
+  ctx.fillText(currentChar.emoji, W/2, portraitY+20);
+  ctx.textBaseline='alphabetic';
+  ctx.restore();
+
+  // Name
+  ctx.font='800 64px Nunito, sans-serif';
+  ctx.fillStyle=currentChar.color;
+  ctx.fillText(currentChar.name+' '+currentPers.name, W/2, 900);
+
+  // Badges
+  const badges=[
+    {text:currentChar.name, color:currentChar.color},
+    {text:currentPers.name, color:currentPers.color},
+    {text:currentCtx.name,  color:currentCtx.color},
+  ];
+  ctx.font='700 30px Nunito, sans-serif';
+  const paddings=badges.map(b=>ctx.measureText(b.text).width+60);
+  const gap=20;
+  const totalW=paddings.reduce((a,b)=>a+b,0)+gap*(badges.length-1);
+  let bx=W/2-totalW/2;
+  const by=970, bh=64;
+  badges.forEach((b,i)=>{
+    const bw=paddings[i];
+    ctx.fillStyle=b.color+'26';
+    ctx.beginPath();
+    if(ctx.roundRect) ctx.roundRect(bx,by,bw,bh,32); else ctx.rect(bx,by,bw,bh);
+    ctx.fill();
+    ctx.strokeStyle=b.color+'55';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle=b.color;
+    ctx.textAlign='center';
+    ctx.fillText(b.text, bx+bw/2, by+bh/2+11);
+    bx+=bw+gap;
+  });
+
+  // Bio text
+  ctx.font='600 36px Nunito, sans-serif';
+  ctx.fillStyle='#9b97b8';
+  ctx.textAlign='center';
+  const bioY=1130;
+  wrapText(ctx,currentBio, W/2, bioY, 860, 52);
+
+  // Bottom CTA / branding
+  ctx.font='700 32px Nunito, sans-serif';
+  ctx.fillStyle='#ffd166';
+  ctx.fillText('✨ Crea el tuyo en ArtStudio', W/2, 1820);
+
+  // Trigger download
+  canvas.toBlob(function(blob){
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download='caldero-magico-'+currentChar.name.toLowerCase().replace(/\s+/g,'-')+'.png';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    btn.disabled=false;
+    showToast('✅ PNG descargado — listo para Stories');
+  }, 'image/png');
+}
+
 buildInspo();
 </script>
 </body>
