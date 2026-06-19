@@ -323,41 +323,89 @@ async function exportToStory(){
   ctx.textBaseline='alphabetic';
   ctx.restore();
 
-  // Name
-  ctx.font='800 64px Nunito, sans-serif';
+  // Name — auto-fit to canvas width, shrinking font or wrapping to 2 lines if needed
+  const fullName = currentChar.name+' '+currentPers.name;
+  const maxNameWidth = 920;
+  let nameFontSize = 64;
   ctx.fillStyle=currentChar.color;
-  ctx.fillText(currentChar.name+' '+currentPers.name, W/2, 780);
+  ctx.font=`800 ${nameFontSize}px Nunito, sans-serif`;
 
-  // Badges
+  while(ctx.measureText(fullName).width > maxNameWidth && nameFontSize > 34){
+    nameFontSize -= 2;
+    ctx.font=`800 ${nameFontSize}px Nunito, sans-serif`;
+  }
+
+  if(ctx.measureText(fullName).width > maxNameWidth){
+    // Still too long even at minimum size — wrap onto two lines
+    const linesUsed = wrapText(ctx, fullName, W/2, 745, maxNameWidth, nameFontSize*1.15);
+    var nameLines = linesUsed;
+  } else {
+    ctx.fillText(fullName, W/2, 780);
+    var nameLines = 1;
+  }
+
+  // Badges — auto-fit: shrink font, then wrap to 2 rows if still too wide
   const badges=[
     {text:currentChar.name, color:currentChar.color},
     {text:currentPers.name, color:currentPers.color},
     {text:currentCtx.name,  color:currentCtx.color},
   ];
-  ctx.font='700 30px Nunito, sans-serif';
-  const paddings=badges.map(b=>ctx.measureText(b.text).width+60);
-  const gap=20;
-  const totalW=paddings.reduce((a,b)=>a+b,0)+gap*(badges.length-1);
-  let bx=W/2-totalW/2;
-  const by=850, bh=64;
-  badges.forEach((b,i)=>{
-    const bw=paddings[i];
+  const maxBadgesWidth = 980;
+  const gap = 18;
+  let badgeFontSize = 30;
+  ctx.font=`700 ${badgeFontSize}px Nunito, sans-serif`;
+
+  function measureRowWidth(items){
+    const pads = items.map(b=>ctx.measureText(b.text).width+56);
+    return { pads, total: pads.reduce((a,b)=>a+b,0)+gap*(items.length-1) };
+  }
+
+  let { total: oneRowTotal } = measureRowWidth(badges);
+  while(oneRowTotal > maxBadgesWidth && badgeFontSize > 20){
+    badgeFontSize -= 2;
+    ctx.font=`700 ${badgeFontSize}px Nunito, sans-serif`;
+    oneRowTotal = measureRowWidth(badges).total;
+  }
+
+  const badgeY0 = 800 + (nameLines-1)*40;
+  const bh = badgeFontSize + 34;
+
+  if(oneRowTotal <= maxBadgesWidth){
+    // Fits on a single row
+    const { pads } = measureRowWidth(badges);
+    let bx=W/2-oneRowTotal/2;
+    badges.forEach((b,i)=>{
+      const bw=pads[i];
+      drawBadge(ctx, bx, badgeY0, bw, bh, b);
+      bx+=bw+gap;
+    });
+  } else {
+    // Wrap into two rows: first 2 badges on row 1, rest on row 2
+    const row1 = badges.slice(0,2), row2 = badges.slice(2);
+    const r1 = measureRowWidth(row1), r2 = measureRowWidth(row2);
+    let bx1=W/2-r1.total/2;
+    row1.forEach((b,i)=>{ drawBadge(ctx, bx1, badgeY0, r1.pads[i], bh, b); bx1+=r1.pads[i]+gap; });
+    let bx2=W/2-r2.total/2;
+    row2.forEach((b,i)=>{ drawBadge(ctx, bx2, badgeY0+bh+14, r2.pads[i], bh, b); bx2+=r2.pads[i]+gap; });
+  }
+
+  function drawBadge(ctx, bx, by, bw, bh, b){
     ctx.fillStyle=b.color+'26';
     ctx.beginPath();
-    if(ctx.roundRect) ctx.roundRect(bx,by,bw,bh,32); else ctx.rect(bx,by,bw,bh);
+    if(ctx.roundRect) ctx.roundRect(bx,by,bw,bh,bh/2); else ctx.rect(bx,by,bw,bh);
     ctx.fill();
     ctx.strokeStyle=b.color+'55';ctx.lineWidth=2;ctx.stroke();
     ctx.fillStyle=b.color;
     ctx.textAlign='center';
-    ctx.fillText(b.text, bx+bw/2, by+bh/2+11);
-    bx+=bw+gap;
-  });
+    ctx.fillText(b.text, bx+bw/2, by+bh/2+badgeFontSize*0.35);
+  }
 
-  // Bio text
+  // Bio text — position shifts down if badges wrapped to 2 rows
+  const badgeRows = (oneRowTotal <= maxBadgesWidth) ? 1 : 2;
   ctx.font='600 36px Nunito, sans-serif';
   ctx.fillStyle='#9b97b8';
   ctx.textAlign='center';
-  const bioY=1010;
+  const bioY = badgeY0 + bh*badgeRows + (badgeRows-1)*14 + 130;
   wrapText(ctx,currentBio, W/2, bioY, 860, 52);
 
   // CTA text above logo
