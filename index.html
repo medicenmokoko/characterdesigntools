@@ -252,10 +252,26 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove('show'),2600);
 }
 
-function exportToStory(){
+async function exportToStory(){
   if(!currentChar){ showToast('⚠️ Genera un personaje primero'); return; }
   const btn=document.getElementById('exportBtn');
   btn.disabled=true;
+
+  // Wait for fonts (including color-emoji fonts) to be fully loaded —
+  // this is the #1 cause of missing emoji on mobile canvas exports.
+  try{
+    if(document.fonts && document.fonts.ready){
+      await document.fonts.ready;
+    }
+    // Pre-warm the emoji glyph by drawing it off-screen first (Android/Samsung fix)
+    const warm=document.createElement('canvas');
+    warm.width=64;warm.height=64;
+    const wctx=warm.getContext('2d');
+    wctx.font='48px sans-serif';
+    wctx.fillText(currentChar.emoji,0,48);
+    // small delay lets some mobile browsers finish glyph rasterization
+    await new Promise(r=>setTimeout(r,60));
+  }catch(e){/* fonts API not supported — proceed anyway */}
 
   const canvas=document.getElementById('exportCanvas');
   const ctx=canvas.getContext('2d');
@@ -299,8 +315,10 @@ function exportToStory(){
   ctx.roundRect ? ctx.roundRect(W/2-portraitR,portraitY-portraitR,portraitR*2,portraitR*2,48) : ctx.rect(W/2-portraitR,portraitY-portraitR,portraitR*2,portraitR*2);
   ctx.fill();
   ctx.strokeStyle='#2e2b4a';ctx.lineWidth=4;ctx.stroke();
-  ctx.font='240px sans-serif';
+  ctx.textAlign='center';
   ctx.textBaseline='middle';
+  // Use a font stack that includes native emoji fonts across platforms
+  ctx.font='240px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Segoe UI Symbol",sans-serif';
   ctx.fillText(currentChar.emoji, W/2, portraitY+20);
   ctx.textBaseline='alphabetic';
   ctx.restore();
