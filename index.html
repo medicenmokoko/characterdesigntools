@@ -315,12 +315,18 @@ function exportToStory(){
   const bioY=1010;
   wrapText(ctx,currentBio, W/2, bioY, 860, 52);
 
+  // CTA text above logo
+  ctx.font='700 32px Nunito, sans-serif';
+  ctx.fillStyle='#ffd166';
+  ctx.textAlign='center';
+  ctx.fillText('✨ Crea el tuyo en mi bio', W/2, 1660);
+
   // Bottom branding — real logo image, no text
   const logoImg=new Image();
   logoImg.onload=function(){
-    const logoH=180;
+    const logoH=160;
     const logoW=logoImg.width*(logoH/logoImg.height);
-    ctx.drawImage(logoImg, W/2-logoW/2, 1700, logoW, logoH);
+    ctx.drawImage(logoImg, W/2-logoW/2, 1710, logoW, logoH);
     finalizeExport(canvas, btn);
   };
   logoImg.onerror=function(){
