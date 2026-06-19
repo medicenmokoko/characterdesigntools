@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Caldero Mágico — ArtStudio</title>
+<title>Caldero Mágico</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -16,7 +16,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
 .b3{width:300px;height:300px;background:var(--cyan);top:40%;left:50%;animation-delay:-10s;}
 @keyframes drift{from{transform:translate(0,0)scale(1);}to{transform:translate(40px,30px)scale(1.1);}}
 nav{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.2rem;border-bottom:1px solid var(--border);background:rgba(15,14,23,.85);backdrop-filter:blur(12px);}
-.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;}.nav-logo img{height:38px;width:auto;display:block;}.nav-logo-text{font-family:'Fredoka One',cursive;font-size:1.05rem;background:linear-gradient(135deg,var(--pink),var(--yellow));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}@media(max-width:480px){.nav-logo img{height:32px;}.nav-logo-text{display:none;}}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;}.nav-logo img{height:54px;width:auto;display:block;}@media(max-width:480px){.nav-logo img{height:42px;}}
 .nav-links{display:flex;gap:.5rem;}
 .nav-btn{font-family:'Nunito',sans-serif;font-size:.82rem;font-weight:800;padding:6px 14px;border-radius:50px;border:2px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;text-decoration:none;transition:all .2s;}
 @media(max-width:400px){.nav-btn{font-size:.72rem;padding:5px 10px;}}
@@ -91,7 +91,7 @@ main{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:1rem 1rem
 <body>
 <div class="bubbles"><div class="bubble b1"></div><div class="bubble b2"></div><div class="bubble b3"></div></div>
 <nav>
-  <a href="https://www.instagram.com/mokokodraws/" target="_blank" rel="noopener" class="nav-logo"><img src="assets-brand/logo.png" alt="Mokoko Drawing Club logo"><span class="nav-logo-text">ArtStudio</span></a>
+  <a href="https://www.instagram.com/mokokodraws/" target="_blank" rel="noopener" class="nav-logo"><img src="assets-brand/logo.png" alt="Mokoko Drawing Club logo"></a>
   <div class="nav-links">
     <a href="index.html"    class="nav-btn active">🧙 Caldero</a>
     <a href="lighting.html" class="nav-btn">💡 Iluminación</a>
@@ -255,19 +255,15 @@ function exportToStory(){
   bubble(950,300,350,'#ff6b9d');
   bubble(540,1700,450,'#06d6a0');
 
-  // Top branding
+  // Top branding — just the section name
   ctx.textAlign='center';
-  ctx.font='700 34px Nunito, sans-serif';
-  ctx.fillStyle='#9b97b8';
-  ctx.fillText('🎨 ArtStudio · Caldero Mágico', W/2, 140);
-
-  // Title wobble emoji
-  ctx.font='160px sans-serif';
-  ctx.fillText('🧙‍♂️', W/2, 360);
+  ctx.font='800 44px "Fredoka One", cursive';
+  ctx.fillStyle='#ffd166';
+  ctx.fillText('🧙‍♂️ Caldero Mágico', W/2, 160);
 
   // Character emoji big portrait
   ctx.save();
-  const portraitY=560, portraitR=190;
+  const portraitY=460, portraitR=210;
   const grad=ctx.createLinearGradient(W/2-portraitR,portraitY-portraitR,W/2+portraitR,portraitY+portraitR);
   grad.addColorStop(0,'#2e2b4a');
   grad.addColorStop(1,'#1a1828');
@@ -276,7 +272,7 @@ function exportToStory(){
   ctx.roundRect ? ctx.roundRect(W/2-portraitR,portraitY-portraitR,portraitR*2,portraitR*2,48) : ctx.rect(W/2-portraitR,portraitY-portraitR,portraitR*2,portraitR*2);
   ctx.fill();
   ctx.strokeStyle='#2e2b4a';ctx.lineWidth=4;ctx.stroke();
-  ctx.font='220px sans-serif';
+  ctx.font='240px sans-serif';
   ctx.textBaseline='middle';
   ctx.fillText(currentChar.emoji, W/2, portraitY+20);
   ctx.textBaseline='alphabetic';
@@ -285,7 +281,7 @@ function exportToStory(){
   // Name
   ctx.font='800 64px Nunito, sans-serif';
   ctx.fillStyle=currentChar.color;
-  ctx.fillText(currentChar.name+' '+currentPers.name, W/2, 900);
+  ctx.fillText(currentChar.name+' '+currentPers.name, W/2, 780);
 
   // Badges
   const badges=[
@@ -298,7 +294,7 @@ function exportToStory(){
   const gap=20;
   const totalW=paddings.reduce((a,b)=>a+b,0)+gap*(badges.length-1);
   let bx=W/2-totalW/2;
-  const by=970, bh=64;
+  const by=850, bh=64;
   badges.forEach((b,i)=>{
     const bw=paddings[i];
     ctx.fillStyle=b.color+'26';
@@ -316,13 +312,24 @@ function exportToStory(){
   ctx.font='600 36px Nunito, sans-serif';
   ctx.fillStyle='#9b97b8';
   ctx.textAlign='center';
-  const bioY=1130;
+  const bioY=1010;
   wrapText(ctx,currentBio, W/2, bioY, 860, 52);
 
-  // Bottom CTA / branding
-  ctx.font='700 32px Nunito, sans-serif';
-  ctx.fillStyle='#ffd166';
-  ctx.fillText('✨ Crea el tuyo en ArtStudio', W/2, 1820);
+  // Bottom branding — real logo image, no text
+  const logoImg=new Image();
+  logoImg.onload=function(){
+    const logoH=180;
+    const logoW=logoImg.width*(logoH/logoImg.height);
+    ctx.drawImage(logoImg, W/2-logoW/2, 1700, logoW, logoH);
+    finalizeExport(canvas, btn);
+  };
+  logoImg.onerror=function(){
+    finalizeExport(canvas, btn);
+  };
+  logoImg.src='assets-brand/logo.png';
+}
+
+function finalizeExport(canvas, btn){
 
   // Trigger download
   canvas.toBlob(function(blob){
