@@ -86,6 +86,19 @@ main{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:1rem 1rem
 /* TOAST */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--card);border:2px solid var(--cyan);color:var(--cyan);font-family:'Fredoka One',cursive;font-size:.9rem;padding:12px 24px;border-radius:50px;opacity:0;pointer-events:none;transition:all .3s;z-index:100;box-shadow:0 8px 24px #0008;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* EXPORT PREVIEW MODAL */
+.export-modal{position:fixed;inset:0;background:rgba(10,9,15,.96);z-index:200;display:none;flex-direction:column;backdrop-filter:blur(6px);}
+.export-modal.show{display:flex;}
+.export-modal-bar{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.modal-close{width:36px;height:36px;border-radius:50%;border:2px solid var(--border);background:var(--card);color:var(--text);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
+.modal-close:hover{border-color:var(--pink);color:var(--pink);}
+.modal-title{font-family:'Nunito',sans-serif;font-size:.78rem;font-weight:700;color:var(--muted);line-height:1.3;}
+.export-modal-body{flex:1;display:flex;align-items:center;justify-content:center;overflow:auto;padding:14px;min-height:0;}
+.export-modal-body img{max-width:100%;max-height:100%;border-radius:16px;box-shadow:0 20px 60px #000a;-webkit-touch-callout:default;-webkit-user-select:none;user-select:none;}
+.export-modal-footer{padding:14px 16px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--border);flex-shrink:0;}
+.btn-dl-fallback{width:100%;font-family:'Fredoka One',cursive;font-size:1rem;padding:14px;border-radius:14px;border:2px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;transition:all .2s;}
+.btn-dl-fallback:hover{border-color:var(--cyan);color:var(--cyan);}
 </style>
 </head>
 <body>
@@ -131,6 +144,20 @@ main{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:1rem 1rem
 </main>
 
 <div class="toast" id="toast">✅ PNG descargado — listo para Stories</div>
+
+<!-- Mobile-friendly preview modal -->
+<div class="export-modal" id="exportModal">
+  <div class="export-modal-bar">
+    <button class="modal-close" onclick="closeExportModal()" aria-label="Cerrar">✕</button>
+    <span class="modal-title">Mantén presionada la imagen para guardarla</span>
+  </div>
+  <div class="export-modal-body">
+    <img id="exportPreviewImg" alt="Caldero Mágico — resultado para Instagram Stories">
+  </div>
+  <div class="export-modal-footer">
+    <button class="btn-dl-fallback" id="dlFallbackBtn" onclick="downloadFromModal()">⬇️ Descargar PNG</button>
+  </div>
+</div>
 
 <!-- Hidden canvas used to render the 1080x1920 export -->
 <canvas id="exportCanvas" width="1080" height="1920" style="display:none"></canvas>
@@ -336,20 +363,47 @@ function exportToStory(){
 }
 
 function finalizeExport(canvas, btn){
+  const isMobile = /Android|iPhone|iPad|iPod|Mobi/i.test(navigator.userAgent) || window.innerWidth < 720;
 
-  // Trigger download
   canvas.toBlob(function(blob){
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');
-    a.href=url;
-    a.download='caldero-magico-'+currentChar.name.toLowerCase().replace(/\s+/g,'-')+'.png';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
     btn.disabled=false;
-    showToast('✅ PNG descargado — listo para Stories');
+    const url=URL.createObjectURL(blob);
+    lastExportUrl = url;
+    lastExportFilename = 'caldero-magico-'+currentChar.name.toLowerCase().replace(/\s+/g,'-')+'.png';
+
+    if(isMobile){
+      // Show preview modal so user can long-press to save
+      const img=document.getElementById('exportPreviewImg');
+      img.src=url;
+      document.getElementById('exportModal').classList.add('show');
+    } else {
+      // Desktop: direct download, same as before
+      const a=document.createElement('a');
+      a.href=url;
+      a.download=lastExportFilename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast('✅ PNG descargado — listo para Stories');
+    }
   }, 'image/png');
+}
+
+let lastExportUrl=null, lastExportFilename='caldero-magico.png';
+
+function closeExportModal(){
+  document.getElementById('exportModal').classList.remove('show');
+}
+
+function downloadFromModal(){
+  if(!lastExportUrl) return;
+  const a=document.createElement('a');
+  a.href=lastExportUrl;
+  a.download=lastExportFilename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  showToast('✅ PNG descargado — listo para Stories');
 }
 
 buildInspo();
