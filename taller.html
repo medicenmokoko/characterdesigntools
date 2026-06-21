@@ -77,8 +77,12 @@ main{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:1.2rem 1
 .ref-slot img{width:100%;height:100%;object-fit:cover;}
 .ref-slot .ref-plus{font-size:1.3rem;color:var(--border);}
 .ref-slot:hover .ref-plus{color:var(--cyan);}
-.ref-slot .ref-x{position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:#000a;color:#ff6b9d;font-size:.65rem;display:none;align-items:center;justify-content:center;cursor:pointer;}
-.ref-slot:hover .ref-x{display:flex;}
+.ref-corner-btn{position:absolute;top:3px;right:3px;width:22px;height:22px;border-radius:50%;background:#000a;font-size:.7rem;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;border:1px solid #ffffff22;transition:all .15s;}
+.ref-paste-btn{color:#fff;opacity:.55;}
+.ref-paste-btn:hover{opacity:1;background:#06d6a0cc;border-color:var(--cyan);transform:scale(1.1);}
+.ref-x-btn{color:#ff6b9d;opacity:.85;}
+.ref-x-btn:hover{opacity:1;background:#ff6b9dcc;color:#fff;transform:scale(1.1);}
+@media(max-width:720px){.ref-paste-btn{opacity:.8;}}
 
 .thumb-row{display:flex;gap:8px;flex-wrap:wrap;}
 .thumb-box{flex:1;min-width:70px;aspect-ratio:1;border-radius:10px;border:2px dashed var(--border);background:#0f0e17;}
@@ -415,23 +419,73 @@ function renderRefGrid(gridId, stateKey, maxSlots){
   for(let i=0;i<maxSlots;i++){
     const slot = document.createElement('div');
     slot.className = 'ref-slot';
+
     if(items[i]){
+      // Filled slot — show image + corner X to remove
       const img = document.createElement('img');
       img.src = items[i];
-      const x = document.createElement('span');
-      x.className = 'ref-x';
-      x.textContent = '✕';
-      x.onclick = (function(idx){ return function(e){ e.stopPropagation(); removeRefImage(stateKey,idx,gridId,maxSlots); }; })(i);
       slot.appendChild(img);
+
+      const x = document.createElement('span');
+      x.className = 'ref-corner-btn ref-x-btn';
+      x.textContent = '✕';
+      x.title = 'Quitar imagen';
+      x.onclick = (function(idx){ return function(e){ e.stopPropagation(); removeRefImage(stateKey,idx,gridId,maxSlots); }; })(i);
       slot.appendChild(x);
     } else {
+      // Empty slot — center "+" to upload, corner clipboard to paste
       const plus = document.createElement('span');
       plus.className = 'ref-plus';
       plus.textContent = '+';
       slot.appendChild(plus);
       slot.onclick = function(){ triggerRefUpload(stateKey, gridId, maxSlots); };
+
+      const pasteBtn = document.createElement('span');
+      pasteBtn.className = 'ref-corner-btn ref-paste-btn';
+      pasteBtn.textContent = '📋';
+      pasteBtn.title = 'Pegar imagen del portapapeles';
+      pasteBtn.onclick = (function(idx){ return function(e){ e.stopPropagation(); pasteRefImage(stateKey, gridId, maxSlots, idx); }; })(i);
+      slot.appendChild(pasteBtn);
     }
+
     grid.appendChild(slot);
+  }
+}
+
+async function pasteRefImage(stateKey, gridId, maxSlots, slotIdx){
+  if(!navigator.clipboard || !navigator.clipboard.read){
+    showToast('⚠️ Prueba con Ctrl+V / Cmd+V en su lugar');
+    return;
+  }
+  const arr = state[stateKey] || [];
+  if(arr.length >= maxSlots){
+    showToast('⚠️ Ya no hay espacio disponible');
+    return;
+  }
+  try{
+    const items = await navigator.clipboard.read();
+    let found = false;
+    for(const item of items){
+      const imageType = item.types.find(t=>t.startsWith('image/'));
+      if(imageType){
+        const blob = await item.getType(imageType);
+        const reader = new FileReader();
+        reader.onload = function(ev){
+          const arr2 = state[stateKey] || [];
+          arr2.push(ev.target.result);
+          state[stateKey] = arr2;
+          renderRefGrid(gridId, stateKey, maxSlots);
+          saveState();
+          showToast('✅ Imagen pegada');
+        };
+        reader.readAsDataURL(blob);
+        found = true;
+        break;
+      }
+    }
+    if(!found) showToast('⚠️ No hay ninguna imagen en el portapapeles');
+  }catch(err){
+    showToast('⚠️ Prueba con Ctrl+V / Cmd+V en su lugar');
   }
 }
 
@@ -674,6 +728,34 @@ function downloadFromModal(){
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   showToast('✅ Ficha descargada');
 }
+
+/* ── GLOBAL PASTE (Ctrl/Cmd+V) FALLBACK ── */
+document.addEventListener('paste', function(e){
+  // Don't hijack paste while typing in a text field
+  const tag = document.activeElement ? document.activeElement.tagName : '';
+  if(tag==='TEXTAREA' || tag==='INPUT') return;
+
+  const items = e.clipboardData ? e.clipboardData.items : null;
+  if(!items) return;
+  for(let i=0;i<items.length;i++){
+    if(items[i].type.indexOf('image')===0){
+      const blob = items[i].getAsFile();
+      const reader = new FileReader();
+      reader.onload = function(ev){
+        const arr = state.refs || [];
+        if(arr.length>=9){ showToast('⚠️ Ya hay 9 referencias, borra una primero'); return; }
+        arr.push(ev.target.result);
+        state.refs = arr;
+        renderRefGrid('refGrid','refs',9);
+        saveState();
+        showToast('✅ Imagen pegada en Referencias');
+      };
+      reader.readAsDataURL(blob);
+      e.preventDefault();
+      break;
+    }
+  }
+});
 
 loadState();
 </script>
