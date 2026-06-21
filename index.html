@@ -39,8 +39,10 @@ nav{position:relative;z-index:10;display:flex;align-items:center;justify-content
 main{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:1rem 1rem 3rem;}
 .slots-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-bottom:1.5rem;}
 @media(max-width:600px){.slots-row{grid-template-columns:1fr;gap:.5rem;}.slot-value{font-size:1.2rem;}}
-.slot-card{background:var(--card);border:2px solid var(--border);border-radius:20px;padding:1.2rem;text-align:center;transition:border-color .2s,transform .2s;}
+.slot-card{background:var(--card);border:2px solid var(--border);border-radius:20px;padding:1.2rem;text-align:center;transition:border-color .2s,transform .2s,background .15s;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;}
 .slot-card:hover{transform:translateY(-3px);}
+.slot-card:active{transform:translateY(-1px) scale(.98);}
+.slots-hint{text-align:center;font-size:.74rem;font-weight:700;color:var(--muted);margin:-.6rem 0 1.2rem;opacity:.7;}
 .slot-label{font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.8rem;display:flex;align-items:center;justify-content:center;gap:5px;text-align:center;line-height:1.3;}
 .slot-dot{width:8px;height:8px;border-radius:50%;}
 .slot-value{font-family:'Fredoka One',cursive;font-size:1.4rem;line-height:1.2;min-height:2.5rem;display:flex;align-items:center;justify-content:center;transition:all .3s;}
@@ -88,6 +90,8 @@ main{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:1rem 1rem
 .promo-banner:hover{transform:translateY(-3px);border-color:var(--yellow);}
 .promo-banner img{width:100%;height:100%;object-fit:cover;display:block;}
 .promo-banner-badge{position:absolute;bottom:10px;right:12px;font-family:'Nunito',sans-serif;font-size:.65rem;font-weight:800;background:#0008;color:#fff;padding:4px 10px;border-radius:50px;backdrop-filter:blur(4px);display:flex;align-items:center;gap:4px;}
+.btn-kofi-donate{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;font-family:'Fredoka One',cursive;font-size:1rem;padding:13px 20px;border-radius:14px;border:2px solid #ffd16655;background:#ffd16612;color:#ffd166;cursor:pointer;text-decoration:none;transition:all .2s;margin-bottom:2.2rem;margin-top:-1rem;}
+.btn-kofi-donate:hover{background:#ffd16622;border-color:var(--yellow);transform:translateY(-2px);}
 @media(max-width:480px){.promo-banner{border-radius:14px;}}
 .inspo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.6rem;}
 .inspo-chip{background:var(--card);border:2px solid var(--border);border-radius:14px;padding:.7rem 1rem;cursor:pointer;transition:all .2s;text-align:left;}
@@ -132,23 +136,25 @@ main{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:1rem 1rem
   </div>
   <div class="nav-links">
     <a href="index.html"    class="nav-btn active">🧙 Caldero</a>
+    <a href="taller.html"   class="nav-btn">🛠️ Taller</a>
     <a href="lighting.html" class="nav-btn">💡 Iluminación</a>
   </div>
 </nav>
 <div class="hero">
   <span class="cauldron-emoji">🧙‍♂️</span>
   <h1>Caldero Mágico</h1>
-  <p>Lanza los dados y descubre tu próximo personaje épico</p>
+  <p>Toca cada ingrediente para personalizarlo, o invoca uno al azar</p>
   <div class="combo-counter" id="comboCounter">✨ +125,000 combinaciones posibles</div>
 </div>
 <main>
   <div class="slots-row">
-    <div class="slot-card"><div class="slot-label"><span class="slot-dot"></span>01 · Ingrediente Base</div><div class="slot-value" id="slotChar">???</div></div>
-    <div class="slot-card"><div class="slot-label"><span class="slot-dot"></span>02 · La Especia Secreta</div><div class="slot-value" id="slotPersonality">???</div></div>
-    <div class="slot-card"><div class="slot-label"><span class="slot-dot"></span>03 · La Poción que lo Transforma Todo</div><div class="slot-value" id="slotContext">???</div></div>
+    <div class="slot-card" id="cardChar" onclick="cycleSlot('char')" role="button" tabindex="0" aria-label="Cambiar Ingrediente Base"><div class="slot-label"><span class="slot-dot"></span>01 · Ingrediente Base</div><div class="slot-value" id="slotChar">???</div></div>
+    <div class="slot-card" id="cardPers" onclick="cycleSlot('pers')" role="button" tabindex="0" aria-label="Cambiar La Especia Secreta"><div class="slot-label"><span class="slot-dot"></span>02 · La Especia Secreta</div><div class="slot-value" id="slotPersonality">???</div></div>
+    <div class="slot-card" id="cardCtx" onclick="cycleSlot('ctx')" role="button" tabindex="0" aria-label="Cambiar La Poción que lo Transforma Todo"><div class="slot-label"><span class="slot-dot"></span>03 · La Poción que lo Transforma Todo</div><div class="slot-value" id="slotContext">???</div></div>
   </div>
+  <div class="slots-hint">👆 Toca cualquier ingrediente para cambiarlo</div>
   <div class="generate-wrap">
-    <button class="btn-generate" onclick="generate()"><span>✨ ¡Tirar los dados!</span></button>
+    <button class="btn-generate" onclick="generate()"><span>🔮 Invocar Personaje</span></button>
     <button class="btn-export" id="exportBtn" onclick="exportToStory()">📲 <span>Exportar para Stories</span></button>
   </div>
   <div class="result-card" id="resultCard">
@@ -166,6 +172,7 @@ main{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:1rem 1rem
     <img src="assets-brand/banner-kofi-dummy.jpg" alt="Apoya este proyecto en Ko-fi">
     <span class="promo-banner-badge">☕ Ko-fi</span>
   </a>
+  <a href="https://ko-fi.com/mokokodraws" target="_blank" rel="noopener" class="btn-kofi-donate">☕ Invítame un café</a>
 
   <div class="inspo-section">
     <div class="section-title">🎲 Ideas rápidas</div>
@@ -245,6 +252,52 @@ function applyResult(char,pers,ctx){
 }
 
 function applyInspo(char,pers,ctx){ applyResult(char,pers,ctx); }
+
+/* ── INDIVIDUAL SLOT CYCLING ── */
+function cycleSlot(which){
+  // If nothing generated yet, do a full random generate first
+  if(!currentChar || !currentPers || !currentCtx){ generate(); return; }
+
+  if(which==='char'){
+    let next; do{ next=pick(CHARACTERS); }while(next.name===currentChar.name && CHARACTERS.length>1);
+    currentChar=next;
+    const s1=document.getElementById('slotChar');
+    s1.textContent=currentChar.emoji+' '+currentChar.name;
+    s1.style.color=currentChar.color;
+    animate(s1);
+  } else if(which==='pers'){
+    let next; do{ next=pick(PERSONALITIES); }while(next.name===currentPers.name && PERSONALITIES.length>1);
+    currentPers=next;
+    const s2=document.getElementById('slotPersonality');
+    s2.textContent=currentPers.name;
+    s2.style.color=currentPers.color;
+    animate(s2);
+  } else if(which==='ctx'){
+    let next; do{ next=pick(CONTEXTS); }while(next.name===currentCtx.name && CONTEXTS.length>1);
+    currentCtx=next;
+    const s3=document.getElementById('slotContext');
+    s3.textContent=currentCtx.name;
+    s3.style.color=currentCtx.color;
+    animate(s3);
+  }
+
+  // Refresh the result card + bio with the updated combo, without re-randomizing everything
+  refreshResultCard();
+}
+
+function refreshResultCard(){
+  const char=currentChar, pers=currentPers, ctx=currentCtx;
+  const bio=pick(BIOS)(char.name,pers.name,ctx.name);
+  currentBio=bio;
+  const card=document.getElementById('resultCard');
+  if(!card.classList.contains('show')){ card.classList.add('show'); }
+  document.getElementById('charPortrait').textContent=char.emoji;
+  document.getElementById('resultName').textContent=char.name+' '+pers.name;
+  document.getElementById('resultName').style.color=char.color;
+  document.getElementById('resultBadges').innerHTML=`<span class="badge-pill" style="background:${char.color}22;color:${char.color}">${char.name}</span><span class="badge-pill" style="background:${pers.color}22;color:${pers.color}">${pers.name}</span><span class="badge-pill" style="background:${ctx.color}22;color:${ctx.color}">${ctx.name}</span>`;
+  document.getElementById('resultBio').textContent=bio;
+  document.getElementById('exportBtn').classList.add('show');
+}
 
 function buildInspo(){
   const grid=document.getElementById('inspoGrid');grid.innerHTML='';
@@ -501,6 +554,12 @@ function downloadFromModal(){
   document.body.removeChild(a);
   showToast('✅ PNG descargado — listo para Stories');
 }
+
+document.querySelectorAll('.slot-card').forEach(card=>{
+  card.addEventListener('keydown', e=>{
+    if(e.key==='Enter' || e.key===' '){ e.preventDefault(); card.click(); }
+  });
+});
 
 buildInspo();
 </script>

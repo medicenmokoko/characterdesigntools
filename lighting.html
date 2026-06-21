@@ -18,6 +18,14 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
 /* NAV */
 nav{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.2rem;border-bottom:1px solid var(--border);background:rgba(15,14,23,.9);backdrop-filter:blur(12px);}
 .nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;}.nav-logo img{height:50px;width:auto;display:block;}@media(max-width:480px){.nav-logo img{height:38px;}}
+.nav-left{display:flex;align-items:center;gap:10px;}
+.social-links{display:flex;align-items:center;gap:6px;}
+.social-icon{width:34px;height:34px;border-radius:50%;border:2px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;color:var(--muted);transition:all .2s;flex-shrink:0;}
+.social-icon svg{width:17px;height:17px;}
+.social-icon:hover{transform:translateY(-2px);}
+.social-icon.ig:hover{border-color:#ff6b9d;color:#ff6b9d;background:#ff6b9d12;}
+.social-icon.kofi:hover{border-color:#ffd166;color:#ffd166;background:#ffd16612;}
+@media(max-width:480px){.social-icon{width:30px;height:30px;}.social-icon svg{width:15px;height:15px;}.social-links{gap:5px;}}
 .nav-links{display:flex;gap:.4rem;}
 .nav-btn{font-family:'Nunito',sans-serif;font-size:.78rem;font-weight:800;padding:6px 14px;border-radius:50px;border:2px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;text-decoration:none;transition:all .2s;white-space:nowrap;}
 .nav-btn:hover{border-color:var(--yellow);color:var(--yellow);}
@@ -131,9 +139,20 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;heigh
 <div class="bubbles"><div class="bubble b1"></div><div class="bubble b2"></div></div>
 
 <nav>
-  <a href="https://www.instagram.com/mokokodraws/" target="_blank" rel="noopener" class="nav-logo"><img src="assets-brand/logo.png" alt="Mokoko Drawing Club logo"></a>
+  <div class="nav-left">
+    <a href="https://www.instagram.com/mokokodraws/" target="_blank" rel="noopener" class="nav-logo"><img src="assets-brand/logo.png" alt="Mokoko Drawing Club logo"></a>
+    <div class="social-links">
+      <a href="https://www.instagram.com/mokokodraws" target="_blank" rel="noopener" class="social-icon ig" aria-label="Instagram de Mokoko Draws">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+      </a>
+      <a href="https://ko-fi.com/mokokodraws" target="_blank" rel="noopener" class="social-icon kofi" aria-label="Apoya en Ko-fi">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+      </a>
+    </div>
+  </div>
   <div class="nav-links">
     <a href="index.html"    class="nav-btn">🧙 Caldero</a>
+    <a href="taller.html"   class="nav-btn">🛠️ Taller</a>
     <a href="lighting.html" class="nav-btn active">💡 Iluminación</a>
   </div>
 </nav>

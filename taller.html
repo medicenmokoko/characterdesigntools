@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taller de Personajes</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#0f0e17;--card:#1a1828;--border:#2e2b4a;--pink:#ff6b9d;--yellow:#ffd166;--cyan:#06d6a0;--purple:#c77dff;--orange:#ff9a3c;--blue:#4cc9f0;--text:#f8f4ff;--muted:#9b97b8;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+.bubbles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.bubble{position:absolute;border-radius:50%;filter:blur(80px);opacity:.1;animation:drift 20s ease-in-out infinite alternate;}
+.b1{width:450px;height:450px;background:var(--cyan);top:-90px;left:10%;}
+.b2{width:350px;height:350px;background:var(--purple);bottom:-70px;right:-70px;animation-delay:-8s;}
+@keyframes drift{from{transform:translate(0,0)scale(1);}to{transform:translate(30px,25px)scale(1.08);}}
+
+nav{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.2rem;border-bottom:1px solid var(--border);background:rgba(15,14,23,.9);backdrop-filter:blur(12px);}
+.nav-left{display:flex;align-items:center;gap:10px;}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;}
+.nav-logo img{height:54px;width:auto;display:block;}
+@media(max-width:480px){.nav-logo img{height:42px;}}
+.social-links{display:flex;align-items:center;gap:6px;}
+.social-icon{width:34px;height:34px;border-radius:50%;border:2px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;color:var(--muted);transition:all .2s;flex-shrink:0;}
+.social-icon svg{width:17px;height:17px;}
+.social-icon:hover{transform:translateY(-2px);}
+.social-icon.ig:hover{border-color:#ff6b9d;color:#ff6b9d;background:#ff6b9d12;}
+.social-icon.kofi:hover{border-color:#ffd166;color:#ffd166;background:#ffd16612;}
+@media(max-width:480px){.social-icon{width:30px;height:30px;}.social-icon svg{width:15px;height:15px;}.social-links{gap:5px;}}
+.nav-links{display:flex;gap:.4rem;}
+.nav-btn{font-family:'Nunito',sans-serif;font-size:.78rem;font-weight:800;padding:6px 14px;border-radius:50px;border:2px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;text-decoration:none;transition:all .2s;white-space:nowrap;}
+.nav-btn:hover{border-color:var(--cyan);color:var(--cyan);}
+.nav-btn.active{background:var(--cyan);border-color:var(--cyan);color:#000;}
+@media(max-width:400px){.nav-btn{font-size:.72rem;padding:5px 10px;}}
+
+.hero{position:relative;z-index:1;text-align:center;padding:1.6rem 1rem 1rem;}
+.hero h1{font-family:'Fredoka One',cursive;font-size:clamp(1.8rem,4.5vw,2.6rem);background:linear-gradient(135deg,var(--cyan),var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.3rem;}
+.hero p{color:var(--muted);font-weight:600;font-size:.85rem;max-width:480px;margin:0 auto;}
+
+.progress-wrap{max-width:680px;margin:1rem auto 0;padding:0 1rem;display:flex;align-items:center;gap:10px;}
+.progress-track{flex:1;height:6px;border-radius:4px;background:var(--card);overflow:hidden;border:1px solid var(--border);}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--blue));border-radius:4px;transition:width .4s ease;width:0%;}
+.progress-label{font-family:'Nunito',sans-serif;font-size:.72rem;font-weight:800;color:var(--muted);white-space:nowrap;}
+
+main{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:1.2rem 1.2rem 4rem;}
+.taller-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:1.2rem;align-items:start;}
+@media(max-width:900px){.taller-grid{grid-template-columns:1fr;}}
+
+.field-card{background:var(--card);border:2px solid var(--border);border-radius:16px;margin-bottom:.9rem;overflow:hidden;transition:border-color .2s;}
+.field-card.filled{border-color:#06d6a044;}
+.field-head{display:flex;align-items:center;gap:10px;padding:.9rem 1.1rem;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;}
+.field-head:hover{background:#ffffff05;}
+.field-num{font-family:'Fredoka One',cursive;font-size:.78rem;color:var(--cyan);min-width:22px;opacity:.7;}
+.field-icon{font-size:1.1rem;flex-shrink:0;}
+.field-title{font-family:'Fredoka One',cursive;font-size:.95rem;flex:1;}
+.field-status{font-size:1rem;flex-shrink:0;transition:transform .2s;}
+.field-status.done{color:var(--cyan);}
+.field-status.empty{color:var(--border);}
+.field-chevron{font-size:.8rem;color:var(--muted);transition:transform .25s;flex-shrink:0;}
+.field-card.collapsed .field-chevron{transform:rotate(-90deg);}
+.field-body{padding:0 1.1rem 1rem;}
+.field-card.collapsed .field-body{display:none;}
+.field-textarea,.field-input{width:100%;background:#0f0e17;border:2px solid var(--border);border-radius:10px;padding:.7rem .85rem;color:var(--text);font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:600;resize:vertical;transition:border-color .2s;}
+.field-textarea:focus,.field-input:focus{outline:none;border-color:var(--cyan);}
+.field-textarea{min-height:90px;line-height:1.6;}
+.field-hint{font-size:.7rem;color:var(--muted);margin-top:.4rem;font-weight:600;opacity:.7;}
+.field-actions{display:flex;justify-content:flex-end;margin-top:.5rem;}
+.skip-btn{font-family:'Nunito',sans-serif;font-size:.68rem;font-weight:800;color:var(--muted);background:transparent;border:1px solid var(--border);padding:4px 10px;border-radius:8px;cursor:pointer;transition:all .15s;}
+.skip-btn:hover{border-color:var(--orange);color:var(--orange);}
+.skip-btn.skipped{border-color:var(--orange);color:var(--orange);background:#ff9a3c12;}
+
+.side-card{background:var(--card);border:2px solid var(--border);border-radius:16px;padding:1.1rem;margin-bottom:.9rem;}
+.side-title{font-family:'Fredoka One',cursive;font-size:.92rem;margin-bottom:.7rem;display:flex;align-items:center;gap:7px;}
+.ref-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;}
+.ref-slot{aspect-ratio:1;border-radius:10px;border:2px dashed var(--border);background:#0f0e17;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;transition:all .2s;}
+.ref-slot:hover{border-color:var(--cyan);background:#06d6a008;}
+.ref-slot img{width:100%;height:100%;object-fit:cover;}
+.ref-slot .ref-plus{font-size:1.3rem;color:var(--border);}
+.ref-slot:hover .ref-plus{color:var(--cyan);}
+.ref-slot .ref-x{position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:#000a;color:#ff6b9d;font-size:.65rem;display:none;align-items:center;justify-content:center;cursor:pointer;}
+.ref-slot:hover .ref-x{display:flex;}
+
+.thumb-row{display:flex;gap:8px;flex-wrap:wrap;}
+.thumb-box{flex:1;min-width:70px;aspect-ratio:1;border-radius:10px;border:2px dashed var(--border);background:#0f0e17;}
+
+.export-bar{position:sticky;bottom:0;background:rgba(15,14,23,.92);backdrop-filter:blur(10px);border-top:1px solid var(--border);padding:.9rem 1.2rem;display:flex;gap:10px;justify-content:center;z-index:50;margin:2rem -1.2rem 0;flex-wrap:wrap;}
+.btn-export-pdf{font-family:'Fredoka One',cursive;font-size:1rem;padding:13px 30px;border-radius:50px;border:none;background:linear-gradient(135deg,var(--cyan),var(--blue));color:#000;cursor:pointer;transition:transform .15s,opacity .2s;display:flex;align-items:center;gap:8px;}
+.btn-export-pdf:hover{opacity:.9;transform:translateY(-2px);}
+.btn-export-pdf:disabled{opacity:.5;cursor:wait;}
+.btn-clear{font-family:'Nunito',sans-serif;font-size:.85rem;font-weight:800;padding:13px 22px;border-radius:50px;border:2px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;}
+.btn-clear:hover{border-color:#ff4444;color:#ff4444;}
+.autosave-indicator{font-family:'Nunito',sans-serif;font-size:.68rem;color:var(--muted);text-align:center;padding-top:.5rem;opacity:.6;display:flex;align-items:center;justify-content:center;gap:5px;}
+.autosave-dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--card);border:2px solid var(--cyan);color:var(--cyan);font-family:'Fredoka One',cursive;font-size:.85rem;padding:11px 22px;border-radius:50px;opacity:0;pointer-events:none;transition:all .3s;z-index:100;box-shadow:0 8px 24px #0008;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+.export-modal{position:fixed;inset:0;background:rgba(10,9,15,.96);z-index:200;display:none;flex-direction:column;backdrop-filter:blur(6px);}
+.export-modal.show{display:flex;}
+.export-modal-bar{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.modal-close{width:36px;height:36px;border-radius:50%;border:2px solid var(--border);background:var(--card);color:var(--text);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.modal-close:hover{border-color:var(--pink);color:var(--pink);}
+.modal-title{font-family:'Nunito',sans-serif;font-size:.78rem;font-weight:700;color:var(--muted);}
+.export-modal-body{flex:1;display:flex;align-items:center;justify-content:center;overflow:auto;padding:14px;min-height:0;}
+.export-modal-body img{max-width:100%;max-height:100%;border-radius:12px;box-shadow:0 20px 60px #000a;-webkit-touch-callout:default;user-select:none;}
+.export-modal-footer{padding:14px 16px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--border);flex-shrink:0;}
+.btn-dl-fallback{width:100%;font-family:'Fredoka One',cursive;font-size:1rem;padding:14px;border-radius:14px;border:2px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;}
+.btn-dl-fallback:hover{border-color:var(--cyan);color:var(--cyan);}
+
+.header-actions{display:flex;justify-content:center;gap:8px;margin-top:.9rem;flex-wrap:wrap;}
+.mode-pill{font-family:'Nunito',sans-serif;font-size:.7rem;font-weight:800;padding:5px 12px;border-radius:50px;background:#06d6a012;border:1px solid #06d6a033;color:var(--cyan);}
+</style>
+</head>
+<body>
+<div class="bubbles"><div class="bubble b1"></div><div class="bubble b2"></div></div>
+
+<nav>
+  <div class="nav-left">
+    <a href="https://www.instagram.com/mokokodraws/" target="_blank" rel="noopener" class="nav-logo"><img src="assets-brand/logo.png" alt="Mokoko Drawing Club logo"></a>
+    <div class="social-links">
+      <a href="https://www.instagram.com/mokokodraws" target="_blank" rel="noopener" class="social-icon ig" aria-label="Instagram de Mokoko Draws">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+      </a>
+      <a href="https://ko-fi.com/mokokodraws" target="_blank" rel="noopener" class="social-icon kofi" aria-label="Apoya en Ko-fi">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+      </a>
+    </div>
+  </div>
+  <div class="nav-links">
+    <a href="index.html"    class="nav-btn">🧙 Caldero</a>
+    <a href="taller.html"   class="nav-btn active">🛠️ Taller</a>
+    <a href="lighting.html" class="nav-btn">💡 Iluminación</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>🛠️ Taller de Personajes</h1>
+  <p>Completa lo que quieras, en el orden que quieras. Todo se guarda solo.</p>
+  <div class="header-actions">
+    <span class="mode-pill" id="modeIndicator">✏️ Sin orden obligatorio</span>
+  </div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label"><span id="progressCount">0</span>/9 completos</div>
+</div>
+
+<main>
+  <div class="taller-grid">
+
+    <div class="fields-col">
+
+      <div class="field-card" id="field-idea" data-field="idea">
+        <div class="field-head" onclick="toggleField('idea')">
+          <span class="field-num">01</span><span class="field-icon">💡</span>
+          <span class="field-title">Idea</span>
+          <span class="field-status empty" id="status-idea">○</span>
+          <span class="field-chevron">▾</span>
+        </div>
+        <div class="field-body">
+          <textarea class="field-textarea" id="input-idea" placeholder="Describe la idea general del personaje en 2-3 líneas. Ej: Es un orco marinero que le gusta fumar su pipa..." oninput="onFieldInput('idea')"></textarea>
+          <div class="field-hint">El punto de partida — no tiene que ser perfecto, solo un disparador.</div>
+          <div class="field-actions"><button class="skip-btn" onclick="toggleSkip('idea',event)">Saltar por ahora</button></div>
+        </div>
+      </div>
+
+      <div class="field-card" id="field-concepto" data-field="concepto">
+        <div class="field-head" onclick="toggleField('concepto')">
+          <span class="field-num">02</span><span class="field-icon">🎯</span>
+          <span class="field-title">Concepto</span>
+          <span class="field-status empty" id="status-concepto">○</span>
+          <span class="field-chevron">▾</span>
+        </div>
+        <div class="field-body">
+          <textarea class="field-textarea" id="input-concepto" placeholder="Resume la idea en una frase corta. Ej: Orco marinero, rudo, solitario, cazador de ballenas" oninput="onFieldInput('concepto')" style="min-height:60px"></textarea>
+          <div class="field-hint">La versión "elevator pitch" de tu idea.</div>
+          <div class="field-actions"><button class="skip-btn" onclick="toggleSkip('concepto',event)">Saltar por ahora</button></div>
+        </div>
+      </div>
+
+      <div class="field-card" id="field-nombre" data-field="nombre">
+        <div class="field-head" onclick="toggleField('nombre')">
+          <span class="field-num">03</span><span class="field-icon">🏷️</span>
+          <span class="field-title">Nombre</span>
+          <span class="field-status empty" id="status-nombre">○</span>
+          <span class="field-chevron">▾</span>
+        </div>
+        <div class="field-body">
+          <input class="field-input" id="input-nombre" type="text" placeholder="Ej: Arkhom" oninput="onFieldInput('nombre')">
+          <div class="field-actions"><button class="skip-btn" onclick="toggleSkip('nombre',event)">Saltar por ahora</button></div>
+        </div>
+      </div>
+
+      <div class="field-card" id="field-fisicas" data-field="fisicas">
+        <div class="field-head" onclick="toggleField('fisicas')">
+          <span class="field-num">04</span><span class="field-icon">🧍</span>
+          <span class="field-title">Características físicas</span>
+          <span class="field-status empty" id="status-fisicas">○</span>
+          <span class="field-chevron">▾</span>
+        </div>
+        <div class="field-body">
+          <textarea class="field-textarea" id="input-fisicas" placeholder="Ej: Robusto, grueso pero no musculoso, tiene barba, ciego de un ojo, cuadrado." oninput="onFieldInput('fisicas')" style="min-height:70px"></textarea>
+          <div class="field-actions"><button class="skip-btn" onclick="toggleSkip('fisicas',event)">Saltar por ahora</button></div>
+        </div>
+      </div>
+
+      <div class="field-card" id="field-edad" data-field="edad">
+        <div class="field-head" onclick="toggleField('edad')">
+          <span class="field-num">05</span><span class="field-icon">🎂</span>
+          <span class="field-title">Edad</span>
+          <span class="field-status empty" id="status-edad">○</span>
+          <span class="field-chevron">▾</span>
+        </div>
+        <div class="field-body">
+          <input class="field-input" id="input-edad" type="text" placeholder="Ej: 85 años" oninput="onFieldInput('edad')">
+          <div class="field-actions"><button class="skip-btn" onclick="toggleSkip('edad',event)">Saltar por ahora</button></div>
+        </div>
+      </div>
+
+      <div class="field-card" id="field-personalidad" data-field="personalidad">
+        <div class="field-head" onclick="toggleField('personalidad')">
+          <span class="field-num">06</span><span class="field-icon">🎭</span>
+          <span class="field-title">Personalidad</span>
+          <span class="field-status empty" id="status-personalidad">○</span>
+          <span class="field-chevron">▾</span>
+        </div>
+        <div class="field-body">
+          <textarea class="field-textarea" id="input-personalidad" placeholder="Ej: Rudo, solitario, agresivo, melancólico." oninput="onFieldInput('personalidad')" style="min-height:60px"></textarea>
+          <div class="field-actions"><button class="skip-btn" onclick="toggleSkip('personalidad',event)">Saltar por ahora</button></div>
+        </div>
+      </div>
+
+      <div class="field-card" id="field-ocupacion" data-field="ocupacion">
+        <div class="field-head" onclick="toggleField('ocupacion')">
+          <span class="field-num">07</span><span class="field-icon">⚙️</span>
+          <span class="field-title">Ocupación</span>
+          <span class="field-status empty" id="status-ocupacion">○</span>
+          <span class="field-chevron">▾</span>
+        </div>
+        <div class="field-body">
+          <input class="field-input" id="input-ocupacion" type="text" placeholder="Ej: Capitán de un barco ballenero" oninput="onFieldInput('ocupacion')">
+          <div class="field-actions"><button class="skip-btn" onclick="toggleSkip('ocupacion',event)">Saltar por ahora</button></div>
+        </div>
+      </div>
+
+      <div class="field-card" id="field-ropa" data-field="ropa">
+        <div class="field-head" onclick="toggleField('ropa')">
+          <span class="field-num">08</span><span class="field-icon">🧥</span>
+          <span class="field-title">Ropa y accesorios</span>
+          <span class="field-status empty" id="status-ropa">○</span>
+          <span class="field-chevron">▾</span>
+        </div>
+        <div class="field-body">
+          <textarea class="field-textarea" id="input-ropa" placeholder="Ej: Gorro marinero, soga en el brazo" oninput="onFieldInput('ropa')" style="min-height:60px"></textarea>
+          <div class="field-actions"><button class="skip-btn" onclick="toggleSkip('ropa',event)">Saltar por ahora</button></div>
+        </div>
+      </div>
+
+      <div class="field-card" id="field-extra" data-field="extra">
+        <div class="field-head" onclick="toggleField('extra')">
+          <span class="field-num">09</span><span class="field-icon">✨</span>
+          <span class="field-title">Notas extra</span>
+          <span class="field-status empty" id="status-extra">○</span>
+          <span class="field-chevron">▾</span>
+        </div>
+        <div class="field-body">
+          <textarea class="field-textarea" id="input-extra" placeholder="Cualquier otro detalle que se te ocurra — manías, objetos, historia, lo que sea." oninput="onFieldInput('extra')" style="min-height:60px"></textarea>
+          <div class="field-actions"><button class="skip-btn" onclick="toggleSkip('extra',event)">Saltar por ahora</button></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="side-col">
+
+      <div class="side-card">
+        <div class="side-title">🖼️ Referencias visuales</div>
+        <div class="ref-grid" id="refGrid"></div>
+        <div class="field-hint" style="margin-top:.6rem">Sube hasta 9 imágenes de inspiración (estilo, poses, vestuario, lo que sea).</div>
+      </div>
+
+      <div class="side-card">
+        <div class="side-title">✏️ Thumbnails</div>
+        <div class="thumb-row" id="thumbGrid">
+          <div class="thumb-box"></div>
+          <div class="thumb-box"></div>
+          <div class="thumb-box"></div>
+        </div>
+        <div class="field-hint" style="margin-top:.6rem">Espacio reservado — dibuja tus bocetos directo sobre el PDF exportado.</div>
+      </div>
+
+      <div class="side-card">
+        <div class="side-title">🎨 Estilo gráfico</div>
+        <div class="ref-grid" id="styleGrid" style="grid-template-columns:repeat(3,1fr)"></div>
+        <div class="field-hint" style="margin-top:.6rem">Referencias del estilo de dibujo/arte que quieres lograr.</div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<div class="export-bar">
+  <button class="btn-clear" onclick="clearAll()">🗑 Limpiar todo</button>
+  <button class="btn-export-pdf" id="exportPdfBtn" onclick="exportSheet()">📄 <span>Exportar Ficha</span></button>
+</div>
+<div class="autosave-indicator"><span class="autosave-dot"></span> Autoguardado activo</div>
+
+<div class="toast" id="toast">✅ Guardado</div>
+
+<div class="export-modal" id="exportModal">
+  <div class="export-modal-bar">
+    <button class="modal-close" onclick="closeExportModal()" aria-label="Cerrar">✕</button>
+    <span class="modal-title">Mantén presionada la imagen para guardarla</span>
+  </div>
+  <div class="export-modal-body">
+    <img id="exportPreviewImg" alt="Ficha de personaje">
+  </div>
+  <div class="export-modal-footer">
+    <button class="btn-dl-fallback" id="dlFallbackBtn" onclick="downloadFromModal()">⬇️ Descargar PNG</button>
+  </div>
+</div>
+
+<canvas id="exportCanvas" width="1600" height="1200" style="display:none"></canvas>
+<input type="file" id="refFileInput" accept="image/*" multiple style="display:none">
+<input type="file" id="styleFileInput" accept="image/*" multiple style="display:none">
+
+<script>
+const FIELDS = ['idea','concepto','nombre','fisicas','edad','personalidad','ocupacion','ropa','extra'];
+const STORAGE_KEY = 'taller_personajes_v1';
+
+let state = { fields:{}, skipped:{}, collapsed:{}, refs:[], styleRefs:[] };
+
+function loadState(){
+  try{
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if(saved){
+      const parsed = JSON.parse(saved);
+      state = Object.assign(state, parsed);
+    }
+  }catch(e){}
+  FIELDS.forEach(f=>{
+    const el = document.getElementById('input-'+f);
+    if(el && state.fields[f]) el.value = state.fields[f];
+    updateFieldStatus(f);
+    if(state.skipped[f]) markSkippedUI(f);
+  });
+  renderRefGrid('refGrid', 'refs', 9);
+  renderRefGrid('styleGrid', 'styleRefs', 3);
+  updateProgress();
+}
+
+function saveState(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function onFieldInput(field){
+  const el = document.getElementById('input-'+field);
+  state.fields[field] = el.value;
+  if(el.value.trim().length>0 && state.skipped[field]){
+    state.skipped[field] = false;
+    markSkippedUI(field);
+  }
+  updateFieldStatus(field);
+  updateProgress();
+  saveState();
+}
+
+function updateFieldStatus(field){
+  const val = state.fields[field] || '';
+  const statusEl = document.getElementById('status-'+field);
+  const cardEl = document.getElementById('field-'+field);
+  const hasContent = val.trim().length>0;
+  statusEl.textContent = hasContent ? '✓' : '○';
+  statusEl.className = 'field-status ' + (hasContent ? 'done' : 'empty');
+  cardEl.classList.toggle('filled', hasContent);
+}
+
+function toggleField(field){
+  const cardEl = document.getElementById('field-'+field);
+  cardEl.classList.toggle('collapsed');
+}
+
+function toggleSkip(field, e){
+  e.stopPropagation();
+  state.skipped[field] = !state.skipped[field];
+  markSkippedUI(field);
+  updateProgress();
+  saveState();
+}
+
+function markSkippedUI(field){
+  const allBtns = document.querySelectorAll('#field-'+field+' .skip-btn');
+  allBtns.forEach(b=>{
+    b.classList.toggle('skipped', !!state.skipped[field]);
+    b.textContent = state.skipped[field] ? '↩ Deshacer salto' : 'Saltar por ahora';
+  });
+}
+
+function updateProgress(){
+  let done = 0;
+  FIELDS.forEach(f=>{
+    const val = state.fields[f] || '';
+    if(val.trim().length>0 || state.skipped[f]) done++;
+  });
+  document.getElementById('progressCount').textContent = done;
+  document.getElementById('progressFill').style.width = (done/FIELDS.length*100)+'%';
+}
+
+function renderRefGrid(gridId, stateKey, maxSlots){
+  const grid = document.getElementById(gridId);
+  grid.innerHTML = '';
+  const items = state[stateKey] || [];
+  for(let i=0;i<maxSlots;i++){
+    const slot = document.createElement('div');
+    slot.className = 'ref-slot';
+    if(items[i]){
+      const img = document.createElement('img');
+      img.src = items[i];
+      const x = document.createElement('span');
+      x.className = 'ref-x';
+      x.textContent = '✕';
+      x.onclick = (function(idx){ return function(e){ e.stopPropagation(); removeRefImage(stateKey,idx,gridId,maxSlots); }; })(i);
+      slot.appendChild(img);
+      slot.appendChild(x);
+    } else {
+      const plus = document.createElement('span');
+      plus.className = 'ref-plus';
+      plus.textContent = '+';
+      slot.appendChild(plus);
+      slot.onclick = function(){ triggerRefUpload(stateKey, gridId, maxSlots); };
+    }
+    grid.appendChild(slot);
+  }
+}
+
+function triggerRefUpload(stateKey, gridId, maxSlots){
+  const input = stateKey==='refs' ? document.getElementById('refFileInput') : document.getElementById('styleFileInput');
+  input.onchange = function(e){
+    const files = Array.from(e.target.files);
+    const arr = state[stateKey] || [];
+    const remaining = maxSlots - arr.length;
+    const toLoad = files.slice(0, remaining);
+    let loaded=0;
+    if(toLoad.length===0){ input.value=''; return; }
+    toLoad.forEach(function(file){
+      const reader = new FileReader();
+      reader.onload = function(ev){
+        arr.push(ev.target.result);
+        state[stateKey] = arr;
+        loaded++;
+        if(loaded===toLoad.length){
+          renderRefGrid(gridId, stateKey, maxSlots);
+          saveState();
+          showToast('✅ Imagen agregada');
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+    input.value='';
+  };
+  input.click();
+}
+
+function removeRefImage(stateKey, idx, gridId, maxSlots){
+  state[stateKey].splice(idx,1);
+  renderRefGrid(gridId, stateKey, maxSlots);
+  saveState();
+}
+
+function clearAll(){
+  if(!confirm('¿Borrar todo el contenido del taller? Esta acción no se puede deshacer.')) return;
+  state = { fields:{}, skipped:{}, collapsed:{}, refs:[], styleRefs:[] };
+  localStorage.removeItem(STORAGE_KEY);
+  FIELDS.forEach(function(f){
+    const el = document.getElementById('input-'+f);
+    if(el) el.value='';
+    updateFieldStatus(f);
+    markSkippedUI(f);
+  });
+  renderRefGrid('refGrid','refs',9);
+  renderRefGrid('styleGrid','styleRefs',3);
+  updateProgress();
+  showToast('🗑 Todo limpio');
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2200);
+}
+
+async function exportSheet(){
+  const hasAny = FIELDS.some(function(f){ return (state.fields[f]||'').trim().length>0; });
+  if(!hasAny){ showToast('⚠️ Completa al menos un campo'); return; }
+
+  const btn = document.getElementById('exportPdfBtn');
+  btn.disabled = true;
+
+  try{ if(document.fonts && document.fonts.ready) await document.fonts.ready; }catch(e){}
+
+  const canvas = document.getElementById('exportCanvas');
+  const ctx = canvas.getContext('2d');
+  const W=1600, H=1200;
+  ctx.clearRect(0,0,W,H);
+
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0,0,W,H);
+
+  ctx.textAlign='left';
+  ctx.fillStyle='#0f0e17';
+  ctx.font='900 44px Nunito, sans-serif';
+  ctx.fillText('FICHA DE PERSONAJE', 50, 70);
+  ctx.font='600 18px Nunito, sans-serif';
+  ctx.fillStyle='#6b6880';
+  ctx.fillText('Creado en el Taller de Personajes — Mokoko Drawing Club', 50, 98);
+
+  ctx.strokeStyle='#e5e3ee';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(50,120);ctx.lineTo(W-50,120);ctx.stroke();
+
+  const leftX=50, leftW=620, topY=150;
+  ctx.strokeStyle='#0f0e17';ctx.lineWidth=2.5;
+  if(ctx.roundRect){ ctx.beginPath();ctx.roundRect(leftX,topY,leftW,H-topY-50,16);ctx.stroke(); }
+
+  let ly = topY+40;
+  ctx.fillStyle='#0f0e17';
+  ctx.font='800 15px Nunito, sans-serif';
+  ctx.fillText('IDEA:', leftX+30, ly);
+  ly+=28;
+  ctx.font='500 17px Nunito, sans-serif';
+  ctx.fillStyle='#2a2838';
+  ly = wrapTextLeft(ctx, state.fields.idea || '—', leftX+30, ly, leftW-60, 24) + 30;
+
+  ctx.strokeStyle='#d8d5e4';ctx.lineWidth=1;
+  ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(leftX+30,ly);ctx.lineTo(leftX+leftW-30,ly);ctx.stroke();
+  ctx.setLineDash([]);
+  ly+=35;
+
+  ctx.font='800 15px Nunito, sans-serif';ctx.fillStyle='#0f0e17';
+  ctx.fillText('CONCEPTO:', leftX+30, ly); ly+=28;
+  ctx.font='500 17px Nunito, sans-serif';ctx.fillStyle='#2a2838';
+  ly = wrapTextLeft(ctx, state.fields.concepto || '—', leftX+30, ly, leftW-60, 24) + 40;
+
+  if(state.refs && state.refs.length>0){
+    ctx.font='800 14px Nunito, sans-serif';ctx.fillStyle='#0f0e17';
+    ctx.fillText('REFERENCIAS:', leftX+30, ly); ly+=20;
+    await drawImageGrid(ctx, state.refs, leftX+30, ly, leftW-60, 3, 110);
+    ly += Math.ceil(state.refs.length/3)*120 + 20;
+  }
+
+  const rightX=720, rightW=W-rightX-50;
+  let ry = topY+10;
+  const dataFields = [
+    {key:'nombre', label:'NOMBRE:'},
+    {key:'fisicas', label:'CARACTERÍSTICAS FÍSICAS:'},
+    {key:'edad', label:'EDAD:'},
+    {key:'personalidad', label:'PERSONALIDAD:'},
+    {key:'ocupacion', label:'OCUPACIÓN:'},
+    {key:'ropa', label:'ROPA Y ACCESORIOS:'},
+    {key:'extra', label:'NOTAS EXTRA:'},
+  ];
+
+  for(const df of dataFields){
+    const val = state.fields[df.key];
+    if(!val || !val.trim()) continue;
+    ctx.font='800 14px Nunito, sans-serif';
+    ctx.fillStyle='#0f0e17';
+    ctx.fillText(df.label, rightX, ry); ry+=24;
+    ctx.font='500 16px Nunito, sans-serif';
+    ctx.fillStyle='#2a2838';
+    ry = wrapTextLeft(ctx, val, rightX, ry, rightW, 22) + 18;
+    ctx.strokeStyle='#e5e3ee';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(rightX,ry-8);ctx.lineTo(rightX+rightW,ry-8);ctx.stroke();
+    ry+=14;
+    if(ry > H-60) break;
+  }
+
+  if(state.styleRefs && state.styleRefs.length>0 && ry < H-180){
+    ctx.font='800 14px Nunito, sans-serif';ctx.fillStyle='#0f0e17';
+    ctx.fillText('REFERENCIAS DE ESTILO:', rightX, ry); ry+=20;
+    await drawImageGrid(ctx, state.styleRefs, rightX, ry, rightW, 3, 100);
+  }
+
+  const logoImg = new Image();
+  logoImg.onload = function(){
+    const logoH=70;
+    const logoW = logoImg.width*(logoH/logoImg.height);
+    ctx.drawImage(logoImg, W-logoW-40, H-logoH-25, logoW, logoH);
+    finalizeExport(canvas, btn);
+  };
+  logoImg.onerror = function(){ finalizeExport(canvas, btn); };
+  logoImg.src = 'assets-brand/logo.png';
+}
+
+function wrapTextLeft(ctx, text, x, y, maxWidth, lineHeight){
+  const words = String(text).split(' ');
+  let line='', curY=y;
+  for(let n=0;n<words.length;n++){
+    const test = line+words[n]+' ';
+    if(ctx.measureText(test).width>maxWidth && n>0){
+      ctx.fillText(line.trim(), x, curY);
+      line = words[n]+' ';
+      curY += lineHeight;
+    } else { line = test; }
+  }
+  ctx.fillText(line.trim(), x, curY);
+  return curY + lineHeight;
+}
+
+function drawImageGrid(ctx, dataUrls, x, y, totalWidth, cols, cellH){
+  return new Promise(function(resolve){
+    const gap=8;
+    const cellW = (totalWidth - gap*(cols-1))/cols;
+    let loaded=0;
+    if(dataUrls.length===0){ resolve(); return; }
+    dataUrls.forEach(function(url,i){
+      const img = new Image();
+      img.onload=function(){
+        const cx = x + (i%cols)*(cellW+gap);
+        const cy = y + Math.floor(i/cols)*(cellH+gap);
+        const scale = Math.max(cellW/img.width, cellH/img.height);
+        const sw = cellW/scale, sh = cellH/scale;
+        const sx = (img.width-sw)/2, sy=(img.height-sh)/2;
+        ctx.save();
+        ctx.beginPath();
+        if(ctx.roundRect) ctx.roundRect(cx,cy,cellW,cellH,8); else ctx.rect(cx,cy,cellW,cellH);
+        ctx.clip();
+        ctx.drawImage(img, sx,sy,sw,sh, cx,cy,cellW,cellH);
+        ctx.restore();
+        ctx.strokeStyle='#e5e3ee';ctx.lineWidth=1;
+        ctx.beginPath();
+        if(ctx.roundRect) ctx.roundRect(cx,cy,cellW,cellH,8); else ctx.rect(cx,cy,cellW,cellH);
+        ctx.stroke();
+        loaded++;
+        if(loaded===dataUrls.length) resolve();
+      };
+      img.onerror=function(){ loaded++; if(loaded===dataUrls.length) resolve(); };
+      img.src=url;
+    });
+  });
+}
+
+let lastExportUrl=null, lastExportFilename='ficha-personaje.png';
+
+function finalizeExport(canvas, btn){
+  const isMobile = /Android|iPhone|iPad|iPod|Mobi/i.test(navigator.userAgent) || window.innerWidth < 720;
+  canvas.toBlob(function(blob){
+    btn.disabled=false;
+    const url = URL.createObjectURL(blob);
+    lastExportUrl = url;
+    const nameVal = (state.fields.nombre||'personaje').toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9\-]/g,'');
+    lastExportFilename = 'ficha-'+(nameVal||'personaje')+'.png';
+
+    if(isMobile){
+      document.getElementById('exportPreviewImg').src = url;
+      document.getElementById('exportModal').classList.add('show');
+    } else {
+      const a=document.createElement('a');
+      a.href=url; a.download=lastExportFilename;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      showToast('✅ Ficha descargada');
+    }
+  }, 'image/png');
+}
+
+function closeExportModal(){ document.getElementById('exportModal').classList.remove('show'); }
+function downloadFromModal(){
+  if(!lastExportUrl) return;
+  const a=document.createElement('a');
+  a.href=lastExportUrl; a.download=lastExportFilename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  showToast('✅ Ficha descargada');
+}
+
+loadState();
+</script>
+</body>
+</html>
