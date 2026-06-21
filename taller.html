@@ -338,7 +338,7 @@ function loadState(){
     if(state.skipped[f]) markSkippedUI(f);
   });
   renderRefGrid('refGrid', 'refs', 9);
-  renderRefGrid('styleGrid', 'styleRefs', 3);
+  renderRefGrid('styleGrid', 'styleRefs', 9);
   updateProgress();
 }
 
@@ -521,7 +521,7 @@ function clearAll(){
     markSkippedUI(f);
   });
   renderRefGrid('refGrid','refs',9);
-  renderRefGrid('styleGrid','styleRefs',3);
+  renderRefGrid('styleGrid','styleRefs',9);
   updateProgress();
   showToast('🗑 Todo limpio');
 }
