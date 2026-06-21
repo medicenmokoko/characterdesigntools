@@ -773,12 +773,9 @@ function wrapTextLeft(ctx, text, x, y, maxWidth, lineHeight){
 function drawGridContainer(ctx, x, y, w, h){
   ctx.save();
   ctx.fillStyle = '#fafafc';
-  ctx.strokeStyle = '#0f0e17';
-  ctx.lineWidth = 2;
   ctx.beginPath();
   if(ctx.roundRect) ctx.roundRect(x, y, w, h, 12); else ctx.rect(x, y, w, h);
   ctx.fill();
-  ctx.stroke();
   ctx.restore();
 }
 
