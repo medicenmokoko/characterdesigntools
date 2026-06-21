@@ -552,6 +552,9 @@ async function exportSheet(){
   const W = 1600;
   const leftX=50, leftW=620, topY=150;
   const rightX=720, rightW=W-rightX-50;
+  const GRID_CELL_H = 105;
+  const GRID_PAD = 14;
+  const FIXED_GRID_H = GRID_PAD*2 + 3*GRID_CELL_H + 2*8; // fixed 3-row footprint + inner padding, regardless of image count
 
   function measureLeftHeight(){
     let ly = topY+40;
@@ -567,11 +570,11 @@ async function exportSheet(){
 
     if(state.refs && state.refs.length>0){
       ly+=20; // label
-      ly += gridHeightFor(state.refs.length, 110, 3) + 30;
+      ly += FIXED_GRID_H + 30;
     }
     if(state.styleRefs && state.styleRefs.length>0){
       ly+=20; // label
-      ly += gridHeightFor(state.styleRefs.length, 110, 3) + 20;
+      ly += FIXED_GRID_H + 20;
     }
     return ly + 40; // bottom padding inside the box
   }
@@ -605,7 +608,8 @@ async function exportSheet(){
   const THUMB_ZONE_H = 420; // generous drawing space, per feedback
   const leftNeeded = measureLeftHeight();
   const rightNeeded = measureRightHeight();
-  const contentH = Math.max(leftNeeded, rightNeeded);
+  const SAFETY_MARGIN = 40; // guards against minor font-metric drift between measure/draw passes
+  const contentH = Math.max(leftNeeded, rightNeeded) + SAFETY_MARGIN;
   const baseH = Math.max(900, contentH + 60); // 60px bottom margin for logo
 
   /* ── PASS 2: actually render at the exact computed height ── */
@@ -632,9 +636,10 @@ async function exportSheet(){
   ctx.strokeStyle='#e5e3ee';ctx.lineWidth=2;
   ctx.beginPath();ctx.moveTo(50,120);ctx.lineTo(W-50,120);ctx.stroke();
 
-  /* ── LEFT COLUMN: Idea, Concepto, Referencias, Referencias de Estilo ── */
-  ctx.strokeStyle='#0f0e17';ctx.lineWidth=2.5;
-  if(ctx.roundRect){ ctx.beginPath();ctx.roundRect(leftX,topY,leftW,leftNeeded,16);ctx.stroke(); }
+  /* ── LEFT COLUMN: Idea, Concepto, Referencias, Referencias de Estilo ──
+     NOTE: the outer box outline is drawn LAST (after all content,
+     including async image grids) so it always wraps the real content
+     and never gets cut short by a stale height estimate. */
 
   let ly = topY+40;
   ctx.fillStyle='#0f0e17';
@@ -659,16 +664,24 @@ async function exportSheet(){
   if(state.refs && state.refs.length>0){
     ctx.font='800 14px Nunito, sans-serif';ctx.fillStyle='#0f0e17';
     ctx.fillText('REFERENCIAS:', leftX+30, ly); ly+=20;
-    await drawImageGrid(ctx, state.refs, leftX+30, ly, leftW-60, 3, 110);
-    ly += gridHeightFor(state.refs.length, 110, 3) + 30;
+    drawGridContainer(ctx, leftX+30, ly, leftW-60, FIXED_GRID_H);
+    await drawImageGrid(ctx, state.refs, leftX+30, ly, leftW-60, 3, GRID_CELL_H);
+    ly += FIXED_GRID_H + 30;
   }
 
   if(state.styleRefs && state.styleRefs.length>0){
     ctx.font='800 14px Nunito, sans-serif';ctx.fillStyle='#0f0e17';
     ctx.fillText('REFERENCIAS DE ESTILO:', leftX+30, ly); ly+=20;
-    await drawImageGrid(ctx, state.styleRefs, leftX+30, ly, leftW-60, 3, 110);
-    ly += gridHeightFor(state.styleRefs.length, 110, 3) + 20;
+    drawGridContainer(ctx, leftX+30, ly, leftW-60, FIXED_GRID_H);
+    await drawImageGrid(ctx, state.styleRefs, leftX+30, ly, leftW-60, 3, GRID_CELL_H);
+    ly += FIXED_GRID_H + 20;
   }
+
+  // Now draw the box outline wrapping everything, using the ACTUAL final ly
+  // (not the pre-measured estimate) — guarantees the border never cuts content.
+  const leftBoxBottom = Math.max(ly + 10, leftNeeded);
+  ctx.strokeStyle='#0f0e17';ctx.lineWidth=2.5;
+  if(ctx.roundRect){ ctx.beginPath();ctx.roundRect(leftX,topY,leftW,leftBoxBottom-topY,16);ctx.stroke(); }
 
   /* ── RIGHT COLUMN: data fields + thumbnails zone after Ropa y Accesorios ── */
   let ry = topY+10;
@@ -755,17 +768,34 @@ function wrapTextLeft(ctx, text, x, y, maxWidth, lineHeight){
   return curY + lineHeight;
 }
 
+// Draws a fixed-size rounded rectangle container behind/around a 3x3 image
+// grid — images always sit inside this same box no matter how many there are.
+function drawGridContainer(ctx, x, y, w, h){
+  ctx.save();
+  ctx.fillStyle = '#fafafc';
+  ctx.strokeStyle = '#0f0e17';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  if(ctx.roundRect) ctx.roundRect(x, y, w, h, 12); else ctx.rect(x, y, w, h);
+  ctx.fill();
+  ctx.stroke();
+  ctx.restore();
+}
+
 function drawImageGrid(ctx, dataUrls, x, y, totalWidth, cols, cellH){
   return new Promise(function(resolve){
-    const gap=8;
-    const cellW = (totalWidth - gap*(cols-1))/cols;
+    const pad = 14; // inner padding so images don't touch the fixed container edge
+    const gap = 8;
+    const innerW = totalWidth - pad*2;
+    const cellW = (innerW - gap*(cols-1))/cols;
+    const ix = x + pad, iy = y + pad;
     if(!dataUrls || dataUrls.length===0){ resolve(); return; }
     let loaded=0;
     dataUrls.forEach(function(url,i){
       const img = new Image();
       img.onload=function(){
-        const cx = x + (i%cols)*(cellW+gap);
-        const cy = y + Math.floor(i/cols)*(cellH+gap);
+        const cx = ix + (i%cols)*(cellW+gap);
+        const cy = iy + Math.floor(i/cols)*(cellH+gap);
         const scale = Math.max(cellW/img.width, cellH/img.height);
         const sw = cellW/scale, sh = cellH/scale;
         const sx = (img.width-sw)/2, sy=(img.height-sh)/2;
