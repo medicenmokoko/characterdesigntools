@@ -84,9 +84,6 @@ main{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:1.2rem 1
 .ref-x-btn:hover{opacity:1;background:#ff6b9dcc;color:#fff;transform:scale(1.1);}
 @media(max-width:720px){.ref-paste-btn{opacity:.8;}}
 
-.thumb-row{display:flex;gap:8px;flex-wrap:wrap;}
-.thumb-box{flex:1;min-width:70px;aspect-ratio:1;border-radius:10px;border:2px dashed var(--border);background:#0f0e17;}
-
 .export-bar{position:sticky;bottom:0;background:rgba(15,14,23,.92);backdrop-filter:blur(10px);border-top:1px solid var(--border);padding:.9rem 1.2rem;display:flex;gap:10px;justify-content:center;z-index:50;margin:2rem -1.2rem 0;flex-wrap:wrap;}
 .btn-export-pdf{font-family:'Fredoka One',cursive;font-size:1rem;padding:13px 30px;border-radius:50px;border:none;background:linear-gradient(135deg,var(--cyan),var(--blue));color:#000;cursor:pointer;transition:transform .15s,opacity .2s;display:flex;align-items:center;gap:8px;}
 .btn-export-pdf:hover{opacity:.9;transform:translateY(-2px);}
@@ -286,16 +283,6 @@ main{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:1.2rem 1
       </div>
 
       <div class="side-card">
-        <div class="side-title">✏️ Thumbnails</div>
-        <div class="thumb-row" id="thumbGrid">
-          <div class="thumb-box"></div>
-          <div class="thumb-box"></div>
-          <div class="thumb-box"></div>
-        </div>
-        <div class="field-hint" style="margin-top:.6rem">Espacio reservado — dibuja tus bocetos directo sobre el PDF exportado.</div>
-      </div>
-
-      <div class="side-card">
         <div class="side-title">🎨 Estilo gráfico</div>
         <div class="ref-grid" id="styleGrid" style="grid-template-columns:repeat(3,1fr)"></div>
         <div class="field-hint" style="margin-top:.6rem">Referencias del estilo de dibujo/arte que quieres lograr.</div>
@@ -326,7 +313,7 @@ main{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:1.2rem 1
   </div>
 </div>
 
-<canvas id="exportCanvas" width="1600" height="1200" style="display:none"></canvas>
+<canvas id="exportCanvas" width="1600" height="1500" style="display:none"></canvas>
 <input type="file" id="refFileInput" accept="image/*" multiple style="display:none">
 <input type="file" id="styleFileInput" accept="image/*" multiple style="display:none">
 
@@ -555,9 +542,15 @@ async function exportSheet(){
 
   try{ if(document.fonts && document.fonts.ready) await document.fonts.ready; }catch(e){}
 
+  // Higher resolution export: 2x scale for crisp PNG (3200x2400 actual pixels)
+  const SCALE = 2;
   const canvas = document.getElementById('exportCanvas');
+  const baseW=1600, baseH=1500;
+  canvas.width = baseW*SCALE;
+  canvas.height = baseH*SCALE;
   const ctx = canvas.getContext('2d');
-  const W=1600, H=1200;
+  ctx.scale(SCALE, SCALE);
+  const W=baseW, H=baseH;
   ctx.clearRect(0,0,W,H);
 
   ctx.fillStyle = '#ffffff';
@@ -574,6 +567,7 @@ async function exportSheet(){
   ctx.strokeStyle='#e5e3ee';ctx.lineWidth=2;
   ctx.beginPath();ctx.moveTo(50,120);ctx.lineTo(W-50,120);ctx.stroke();
 
+  /* ── LEFT COLUMN: Idea, Concepto, Referencias, Referencias de Estilo ── */
   const leftX=50, leftW=620, topY=150;
   ctx.strokeStyle='#0f0e17';ctx.lineWidth=2.5;
   if(ctx.roundRect){ ctx.beginPath();ctx.roundRect(leftX,topY,leftW,H-topY-50,16);ctx.stroke(); }
@@ -602,24 +596,34 @@ async function exportSheet(){
     ctx.font='800 14px Nunito, sans-serif';ctx.fillStyle='#0f0e17';
     ctx.fillText('REFERENCIAS:', leftX+30, ly); ly+=20;
     await drawImageGrid(ctx, state.refs, leftX+30, ly, leftW-60, 3, 110);
-    ly += Math.ceil(state.refs.length/3)*120 + 20;
+    ly += Math.ceil(state.refs.length/3)*120 + 30;
   }
 
+  if(state.styleRefs && state.styleRefs.length>0){
+    ctx.font='800 14px Nunito, sans-serif';ctx.fillStyle='#0f0e17';
+    ctx.fillText('REFERENCIAS DE ESTILO:', leftX+30, ly); ly+=20;
+    await drawImageGrid(ctx, state.styleRefs, leftX+30, ly, leftW-60, 3, 110);
+    ly += Math.ceil(state.styleRefs.length/3)*120 + 20;
+  }
+
+  /* ── RIGHT COLUMN: data fields + thumbnails zone after Ropa y Accesorios ── */
   const rightX=720, rightW=W-rightX-50;
   let ry = topY+10;
-  const dataFields = [
+  const dataFieldsTop = [
     {key:'nombre', label:'NOMBRE:'},
     {key:'fisicas', label:'CARACTERÍSTICAS FÍSICAS:'},
     {key:'edad', label:'EDAD:'},
     {key:'personalidad', label:'PERSONALIDAD:'},
     {key:'ocupacion', label:'OCUPACIÓN:'},
     {key:'ropa', label:'ROPA Y ACCESORIOS:'},
+  ];
+  const dataFieldsBottom = [
     {key:'extra', label:'NOTAS EXTRA:'},
   ];
 
-  for(const df of dataFields){
+  function drawDataField(df){
     const val = state.fields[df.key];
-    if(!val || !val.trim()) continue;
+    if(!val || !val.trim()) return;
     ctx.font='800 14px Nunito, sans-serif';
     ctx.fillStyle='#0f0e17';
     ctx.fillText(df.label, rightX, ry); ry+=24;
@@ -629,14 +633,27 @@ async function exportSheet(){
     ctx.strokeStyle='#e5e3ee';ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(rightX,ry-8);ctx.lineTo(rightX+rightW,ry-8);ctx.stroke();
     ry+=14;
-    if(ry > H-60) break;
   }
 
-  if(state.styleRefs && state.styleRefs.length>0 && ry < H-180){
-    ctx.font='800 14px Nunito, sans-serif';ctx.fillStyle='#0f0e17';
-    ctx.fillText('REFERENCIAS DE ESTILO:', rightX, ry); ry+=20;
-    await drawImageGrid(ctx, state.styleRefs, rightX, ry, rightW, 3, 100);
-  }
+  dataFieldsTop.forEach(drawDataField);
+
+  // Thumbnails reserved drawing zone — right after Ropa y Accesorios
+  const thumbZoneH = 220;
+  ctx.font='800 14px Nunito, sans-serif';
+  ctx.fillStyle='#0f0e17';
+  ctx.fillText('THUMBNAILS:', rightX, ry); ry+=14;
+  ctx.strokeStyle='#0f0e17';ctx.lineWidth=2;
+  ctx.setLineDash([6,5]);
+  if(ctx.roundRect){ ctx.beginPath();ctx.roundRect(rightX, ry, rightW, thumbZoneH, 12); ctx.stroke(); }
+  ctx.setLineDash([]);
+  ctx.font='500 13px Nunito, sans-serif';
+  ctx.fillStyle='#b8b5c4';
+  ctx.textAlign='center';
+  ctx.fillText('Espacio para tus bocetos a mano', rightX+rightW/2, ry+thumbZoneH/2);
+  ctx.textAlign='left';
+  ry += thumbZoneH + 26;
+
+  dataFieldsBottom.forEach(drawDataField);
 
   const logoImg = new Image();
   logoImg.onload = function(){
