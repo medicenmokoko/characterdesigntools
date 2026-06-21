@@ -582,7 +582,7 @@ async function exportSheet(){
   function measureRightHeight(){
     let ry = topY+10;
     const dataFieldsTop = [
-      {key:'nombre'},{key:'fisicas'},{key:'edad'},{key:'personalidad'},{key:'ocupacion'},{key:'ropa'}
+      {key:'nombre'},{key:'fisicas'},{key:'edad'},{key:'personalidad'},{key:'ocupacion'},{key:'ropa'},{key:'extra'}
     ];
     dataFieldsTop.forEach(function(df){
       const val = state.fields[df.key];
@@ -592,16 +592,9 @@ async function exportSheet(){
       ry = measureWrapHeight(mctx, val, rightW, ry, 22) + 18;
       ry+=14;
     });
-    // Thumbnails zone — generous drawing space
+    // Thumbnails zone — always the last element, generous drawing space
     ry += 28; // label row
     ry += THUMB_ZONE_H + 30;
-    const extraVal = state.fields.extra;
-    if(extraVal && extraVal.trim()){
-      mctx.font='800 14px Nunito, sans-serif'; ry+=24;
-      mctx.font='500 16px Nunito, sans-serif';
-      ry = measureWrapHeight(mctx, extraVal, rightW, ry, 22) + 18;
-      ry+=14;
-    }
     return ry + 40;
   }
 
@@ -683,7 +676,8 @@ async function exportSheet(){
   ctx.strokeStyle='#0f0e17';ctx.lineWidth=2.5;
   if(ctx.roundRect){ ctx.beginPath();ctx.roundRect(leftX,topY,leftW,leftBoxBottom-topY,16);ctx.stroke(); }
 
-  /* ── RIGHT COLUMN: data fields + thumbnails zone after Ropa y Accesorios ── */
+  /* ── RIGHT COLUMN: data fields + thumbnails zone at the end, aligned
+     with the left column's bottom border ── */
   let ry = topY+10;
   const dataFieldsTop = [
     {key:'nombre', label:'NOMBRE:'},
@@ -692,6 +686,7 @@ async function exportSheet(){
     {key:'personalidad', label:'PERSONALIDAD:'},
     {key:'ocupacion', label:'OCUPACIÓN:'},
     {key:'ropa', label:'ROPA Y ACCESORIOS:'},
+    {key:'extra', label:'NOTAS EXTRA:'},
   ];
 
   function drawDataField(df){
@@ -710,24 +705,22 @@ async function exportSheet(){
 
   dataFieldsTop.forEach(drawDataField);
 
-  // Thumbnails reserved drawing zone — generous, label top-left INSIDE the box
+  // Thumbnails reserved drawing zone — extends down to align exactly with
+  // the left column's bottom border, so both boxes end at the same line.
   ctx.font='800 14px Nunito, sans-serif';
   ctx.fillStyle='#0f0e17';
   ctx.fillText('THUMBNAILS:', rightX, ry); ry+=14;
+  const thumbBoxTop = ry;
+  const thumbBoxH = Math.max(THUMB_ZONE_H, leftBoxBottom - thumbBoxTop);
   ctx.strokeStyle='#0f0e17';ctx.lineWidth=2;
   ctx.setLineDash([6,5]);
-  if(ctx.roundRect){ ctx.beginPath();ctx.roundRect(rightX, ry, rightW, THUMB_ZONE_H, 12); ctx.stroke(); }
+  if(ctx.roundRect){ ctx.beginPath();ctx.roundRect(rightX, thumbBoxTop, rightW, thumbBoxH, 12); ctx.stroke(); }
   ctx.setLineDash([]);
   ctx.font='600 12px Nunito, sans-serif';
   ctx.fillStyle='#c4c1d1';
   ctx.textAlign='left';
-  ctx.fillText('✏ Dibuja tus bocetos aquí', rightX+18, ry+26);
-  ry += THUMB_ZONE_H + 30;
-
-  const extraVal = state.fields.extra;
-  if(extraVal && extraVal.trim()){
-    drawDataField({key:'extra', label:'NOTAS EXTRA:'});
-  }
+  ctx.fillText('✏ Dibuja tus bocetos aquí', rightX+18, thumbBoxTop+26);
+  ry = thumbBoxTop + thumbBoxH + 30;
 
   const logoImg = new Image();
   logoImg.onload = function(){
