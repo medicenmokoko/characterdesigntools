@@ -37,6 +37,17 @@ nav{position:relative;z-index:10;display:flex;align-items:center;justify-content
 .hero p{font-size:1.05rem;color:var(--muted);font-weight:600;max-width:480px;margin:0 auto;}
 .combo-counter{display:inline-block;margin-top:.6rem;font-family:'Nunito',sans-serif;font-size:.72rem;font-weight:800;color:var(--purple);background:#c77dff15;border:1px solid #c77dff33;padding:4px 14px;border-radius:50px;letter-spacing:.03em;}
 main{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:1rem 1rem 3rem;}
+/* MODE SELECTOR */
+.mode-selector{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:0 auto 1.5rem;max-width:900px;}
+.mode-btn{font-family:'Nunito',sans-serif;font-size:.78rem;font-weight:900;padding:9px 15px;border-radius:50px;border:2px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:all .2s;white-space:nowrap;}
+.mode-btn:hover{transform:translateY(-2px);border-color:var(--purple);color:var(--text);}
+.mode-btn.active{background:linear-gradient(135deg,#c77dff,#a855f7);border-color:#c77dff;color:#fff;box-shadow:0 4px 18px #c77dff35;}
+.mode-description{text-align:center;color:var(--muted);font-size:.82rem;font-weight:700;margin:-.6rem 0 1.2rem;min-height:1.3em;}
+.slot-card .slot-category{display:block;font-size:.66rem;color:var(--muted);font-weight:700;margin-top:5px;}
+.slot-controls{display:flex;justify-content:center;gap:8px;margin:-.5rem 0 1.2rem;}
+.slot-control{font:800 .72rem 'Nunito',sans-serif;color:var(--muted);background:transparent;border:1px solid var(--border);border-radius:50px;padding:6px 12px;cursor:pointer;transition:all .2s;}
+.slot-control:hover,.slot-control.locked{color:var(--yellow);border-color:var(--yellow);background:#ffd16612;}
+@media(max-width:600px){.mode-selector{gap:6px}.mode-btn{font-size:.72rem;padding:8px 11px}.slot-controls{margin-top:-.3rem}}
 .slots-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-bottom:1.5rem;}
 @media(max-width:600px){.slots-row{grid-template-columns:1fr;gap:.5rem;}.slot-value{font-size:1.2rem;}}
 .slot-card{background:var(--card);border:2px solid var(--border);border-radius:20px;padding:1.2rem;text-align:center;transition:border-color .2s,transform .2s,background .15s;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;}
@@ -147,12 +158,25 @@ main{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:1rem 1rem
   <div class="combo-counter" id="comboCounter">✨ +125,000 combinaciones posibles</div>
 </div>
 <main>
-  <div class="slots-row">
+  <div class="mode-selector" id="modeSelector" aria-label="Modos de creación">
+    <button class="mode-btn active" data-mode="classic" onclick="setMode('classic')">✨ Clásico</button>
+    <button class="mode-btn" data-mode="elements" onclick="setMode('elements')">🔥 Elementos</button>
+    <button class="mode-btn" data-mode="animalObject" onclick="setMode('animalObject')">🦊 Animal + Objeto</button>
+    <button class="mode-btn" data-mode="professionCreature" onclick="setMode('professionCreature')">🧙 Profesión + Criatura</button>
+    <button class="mode-btn" data-mode="conceptContradiction" onclick="setMode('conceptContradiction')">🎭 Concepto + Contradicción</button>
+    <button class="mode-btn" data-mode="foodFantasy" onclick="setMode('foodFantasy')">🍓 Comida + Fantasía</button>
+  </div>
+  <p class="mode-description" id="modeDescription">Combina tres ingredientes para descubrir un personaje inesperado.</p>
+  <div class="slots-row" id="slotsRow">
     <div class="slot-card" id="cardChar" onclick="cycleSlot('char')" role="button" tabindex="0" aria-label="Cambiar Ingrediente Base"><div class="slot-label"><span class="slot-dot"></span>01 · Ingrediente Base</div><div class="slot-value" id="slotChar">???</div></div>
     <div class="slot-card" id="cardPers" onclick="cycleSlot('pers')" role="button" tabindex="0" aria-label="Cambiar La Especia Secreta"><div class="slot-label"><span class="slot-dot"></span>02 · La Especia Secreta</div><div class="slot-value" id="slotPersonality">???</div></div>
     <div class="slot-card" id="cardCtx" onclick="cycleSlot('ctx')" role="button" tabindex="0" aria-label="Cambiar La Poción que lo Transforma Todo"><div class="slot-label"><span class="slot-dot"></span>03 · La Poción que lo Transforma Todo</div><div class="slot-value" id="slotContext">???</div></div>
   </div>
-  <div class="slots-hint">👆 Toca cualquier ingrediente para cambiarlo</div>
+  <div class="slots-hint" id="slotsHint">👆 Toca cualquier ingrediente para cambiarlo</div>
+  <div class="slot-controls" id="slotControls" style="display:none">
+    <button class="slot-control" id="lockFirst" onclick="toggleLock(0)">🔓 Bloquear elemento 1</button>
+    <button class="slot-control" id="lockSecond" onclick="toggleLock(1)">🔓 Bloquear elemento 2</button>
+  </div>
   <div class="generate-wrap">
     <button class="btn-generate" onclick="generate()"><span>🔮 Invocar Personaje</span></button>
     <button class="btn-export" id="exportBtn" onclick="exportToStory()">📲 <span>Exportar para Stories</span></button>
@@ -210,102 +234,558 @@ const PERSONALITIES=[{name:"Tímido",color:"#c77dff"},{name:"Sarcástico",color:
 const CONTEXTS=[{name:"Apocalipsis Zombie",color:"#06d6a0"},{name:"Edad Media",color:"#ffd166"},{name:"Ciberpunk 2099",color:"#4cc9f0"},{name:"Escuela de Magia",color:"#c77dff"},{name:"Espacio Profundo",color:"#4cc9f0"},{name:"Posguerra Nuclear",color:"#ff9a3c"},{name:"Olimpo Griego",color:"#ffd166"},{name:"Tokyo Neon",color:"#ff6b9d"},{name:"Selva Encantada",color:"#06d6a0"},{name:"Desierto Mágico",color:"#ff9a3c"},{name:"Submundo Steampunk",color:"#ffd166"},{name:"Colonia en Marte",color:"#ff6b9d"},{name:"Reino Sumergido",color:"#4cc9f0"},{name:"Torneo Real",color:"#c77dff"},{name:"Imperio Galáctico",color:"#4cc9f0"},{name:"Bosque Maldito",color:"#7a4825"},{name:"Academia de Héroes",color:"#ffd166"},{name:"Ciudad Flotante",color:"#06d6a0"},{name:"Dimensión Paralela",color:"#c77dff"},{name:"Guerra de Clanes",color:"#ff4444"},{name:"Carnaval Eterno",color:"#ff9a3c"},{name:"Laberinto Infinito",color:"#9b97b8"},{name:"Mercado Negro Mágico",color:"#c77dff"},{name:"Castillo Embrujado",color:"#7a4825"},{name:"Estación Espacial Abandonada",color:"#4cc9f0"},{name:"Festival de la Cosecha",color:"#ffd166"},{name:"Catacumbas Ancestrales",color:"#7a4825"},{name:"Reino de Hielo Eterno",color:"#4cc9f0"},{name:"Volcán Sagrado",color:"#ff4444"},{name:"Biblioteca Infinita",color:"#c77dff"},{name:"Arena de Gladiadores",color:"#ff9a3c"},{name:"Pueblo Fantasma",color:"#9b97b8"},{name:"Universidad de lo Oculto",color:"#c77dff"},{name:"Crucero Interdimensional",color:"#4cc9f0"},{name:"Feria de Monstruos",color:"#06d6a0"},{name:"Corte de un Rey Caído",color:"#ffd166"},{name:"Santuario Prohibido",color:"#7a4825"},{name:"Subasta de Reliquias Malditas",color:"#c77dff"},{name:"Tormenta Eterna",color:"#4cc9f0"},{name:"Isla que Nadie Encuentra Dos Veces",color:"#06d6a0"},{name:"Circo de Medianoche",color:"#ff6b9d"},{name:"Frontera entre Mundos",color:"#c77dff"},{name:"Refugio Postapocalíptico",color:"#ff9a3c"},{name:"Templo Hundido",color:"#4cc9f0"},{name:"Reino de los Sueños",color:"#c8b6ff"},{name:"Coliseo de las Sombras",color:"#9b97b8"},{name:"Estación de Tren Inexistente",color:"#7a4825"},{name:"Boda Real Interrumpida",color:"#ffd166"},{name:"Expedición al Fin del Mundo",color:"#06d6a0"},{name:"Última Noche antes del Eclipse",color:"#4cc9f0"}];
 
 const BIOS=[
-(c,p,ctx)=>`Un ${c} de naturaleza ${p.toLowerCase()} que sobrevivió al caos del ${ctx}. Sus cicatrices cuentan historias que pocos se atreven a escuchar.`,
-(c,p,ctx)=>`Nadie esperaba que un ${c} ${p.toLowerCase()} se convirtiera en la leyenda del ${ctx}. Y sin embargo, aquí está.`,
-(c,p,ctx)=>`En el ${ctx}, ser ${p.toLowerCase()} es una maldición. Ser ${c} es otra. Este personaje carga con las dos.`,
-(c,p,ctx)=>`El ${ctx} lo cambió todo. Un ${c} que alguna vez fue ${p.toLowerCase()} ahora debe decidir qué lado de la historia quiere contar.`,
-(c,p,ctx)=>`Conocido en el ${ctx} simplemente como "el ${c}", su actitud ${p.toLowerCase()} esconde un pasado que nadie ha logrado descifrar.`,
-(c,p,ctx)=>`Sobrevivir al ${ctx} no fue fácil para un ${c} tan ${p.toLowerCase()}. Pero las leyendas rara vez nacen del camino fácil.`,
-(c,p,ctx)=>`Antes del ${ctx}, este ${c} era solo otro rostro en la multitud. Su naturaleza ${p.toLowerCase()} lo cambió todo.`,
-(c,p,ctx)=>`Dicen que un ${c} ${p.toLowerCase()} no puede sobrevivir al ${ctx}. Este personaje está decidido a demostrar lo contrario.`,
-(c,p,ctx)=>`En las crónicas del ${ctx} aparece una sola línea sobre él: "${c} ${p.toLowerCase()}, destino desconocido."`,
-(c,p,ctx)=>`Cada quien recuerda al ${c} de forma distinta: para algunos es ${p.toLowerCase()}, para otros es el último testigo del ${ctx}.`,
+(c,p,ctx)=>`En los callejones del ${ctx}, el nombre de ${c} se pronuncia en voz baja. Su carácter ${p.toLowerCase()} le ha permitido sobrevivir donde otros desaparecen, pero también le ha costado algo que jamás confiesa: la posibilidad de volver a casa. Ahora sigue una pista que podría revelar quién provocó la última gran desgracia.`,
+(c,p,ctx)=>`La gente del ${ctx} cree conocer a ${c}: alguien ${p.toLowerCase()}, útil cuando hace falta y peligroso cuando se le contradice. Lo que nadie sabe es que guarda un secreto capaz de cambiar el destino de todos. Cada noche deja una pequeña señal en los lugares que visita, esperando que la persona correcta la encuentre.`,
+(c,p,ctx)=>`Antes de convertirse en una figura temida del ${ctx}, ${c} hizo una promesa: nunca volvería a abandonar a nadie. Su temperamento ${p.toLowerCase()} pone esa promesa a prueba constantemente. Viaja con un objeto que parece insignificante, aunque en realidad contiene la única prueba de una historia que el mundo decidió olvidar.`,
+(c,p,ctx)=>`En las crónicas del ${ctx}, ${c} aparece descrito como ${p.toLowerCase()}. La descripción omite lo más extraño: puede reconocer una mentira por el sonido que deja en el aire. Por eso evita las multitudes y busca respuestas en ruinas, mercados y conversaciones que los demás consideran inútiles.`,
+(c,p,ctx)=>`Nadie sabe de dónde llegó ${c}, pero todos recuerdan la noche en que decidió enfrentarse a algo mucho más grande que él. Su naturaleza ${p.toLowerCase()} es tanto su mayor virtud como su peor obstáculo. No busca gloria: intenta reparar un error antiguo antes de que alguien descubra que fue suyo.`,
+(c,p,ctx)=>`Cada vez que el ${ctx} cambia de estación, ${c} recibe una carta sin remitente. Su actitud ${p.toLowerCase()} hace que parezca incapaz de preocuparse, pero conserva todas las cartas cuidadosamente ordenadas. La última contiene un mapa, una advertencia y el nombre de alguien que debería llevar siglos muerto.`,
+(c,p,ctx)=>`En el ${ctx}, hay trabajos que nadie acepta. ${c} los toma todos, no por valentía, sino porque está buscando a alguien. Su carácter ${p.toLowerCase()} complica cada negociación y convierte los planes sencillos en pequeñas catástrofes. Aun así, siempre cumple su palabra, incluso cuando hacerlo le cuesta demasiado.`,
+(c,p,ctx)=>`Se dice que ${c} apareció después de un acontecimiento imposible en el ${ctx}. Desde entonces, su forma de ser ${p.toLowerCase()} desconcierta incluso a sus aliados. Tiene una habilidad extraordinaria que utiliza para resolver problemas cotidianos, aunque cada uso parece acercarlo un poco más a descubrir la verdad sobre su origen.`,
+(c,p,ctx)=>`Para algunos, ${c} es una leyenda; para otros, una molestia ${p.toLowerCase()} que nunca sabe cuándo retirarse. La verdad está en algún punto intermedio. Protege un lugar que no figura en ningún mapa y espera el día en que alguien llegue sin intentar conquistar, vender o destruir lo que allí se esconde.`,
+(c,p,ctx)=>`El ${ctx} le arrebató casi todo a ${c}, excepto su sentido ${p.toLowerCase()} de la justicia. Desde entonces recorre caminos secundarios ayudando a desconocidos y evitando que se repita la tragedia. Su mayor enemigo no es quien lo persigue, sino la tentación de resolverlo todo del mismo modo que lo perdió todo.`
 ];
+
+
+const CHARACTER_CORE={
+"Vampiro":"un noble nocturno de colmillos finos, capa gastada y una elegancia que intenta ocultar siglos de hambre",
+"Bruja":"una hechicera autodidacta con bolsillos llenos de amuletos, frascos y recetas que nunca salen igual dos veces",
+"Robot":"un autómata construido para una tarea concreta que ha empezado a desarrollar opiniones propias",
+"Dragón":"una criatura escamada de aliento devastador que protege algo mucho más pequeño que un tesoro",
+"Elfo":"un viajero de oído agudo y mirada antigua, experto en leer señales que otros pasan por alto",
+"Pirata":"un saqueador de mares con mapas incompletos, un código propio y una deuda con el océano",
+"Fantasma":"un espíritu ligado a un lugar y a un recuerdo que se niega a desaparecer",
+"Cazador":"un rastreador paciente que conoce las huellas de criaturas que no aparecen en los libros",
+"Mago":"un estudioso de artes arcanas que convierte teorías imposibles en hechizos prácticos",
+"Cyborg":"un combatiente mitad orgánico y mitad máquina que modifica su cuerpo según cada misión",
+"Hada":"un ser diminuto de alas delicadas y magia caprichosa, más astuto de lo que aparenta",
+"Esqueleto":"un caminante de huesos remendados que conserva recuerdos de una vida que ya nadie recuerda",
+"Sirena":"una habitante de las profundidades que conoce rutas submarinas y secretos de naufragios",
+"Demonio":"un negociador del inframundo que prefiere tentar con promesas antes que atacar con fuego",
+"Ángel Caído":"un antiguo mensajero celestial que conserva las alas dañadas y una fe difícil de reconstruir",
+"Alien":"un explorador de una especie desconocida que interpreta las costumbres terrestres de forma literal",
+"Ninja":"un infiltrador silencioso que convierte cualquier sombra en una ruta de escape",
+"Samurái":"un guerrero disciplinado cuya espada guarda la historia de su clan",
+"Vikingo":"un navegante robusto que busca nuevas costas y canta más fuerte cuanto peor se pone la batalla",
+"Gólem":"un guardián de piedra y barro animado por una orden que quizá ya no comprende",
+"Licántropo":"un cazador de sentidos agudos que lucha por mantener el control cuando sale la luna",
+"Centauro":"un explorador veloz que combina la fuerza de un caballo con la precisión de un arquero",
+"Astronauta":"un expedicionario equipado para sobrevivir donde el aire, la gravedad y la lógica fallan",
+"Panadero":"un artesano de masas y hornos que conoce el valor de alimentar a una comunidad",
+"Herrero":"un forjador de armas y herramientas que reconoce la calidad del metal con solo escucharlo",
+"Bibliotecario":"un custodio de libros raros que sabe dónde encontrar historias que oficialmente nunca existieron",
+"Detective":"un investigador metódico que encuentra pistas en los detalles que todos descartan",
+"Domador de Dragones":"un cuidador de bestias colosales que entiende sus gestos mejor que el lenguaje humano",
+"Alquimista":"un investigador de sustancias imposibles que transforma ingredientes humildes en remedios y peligros",
+"Bardo":"un narrador ambulante que convierte rumores, canciones y verdades incómodas en leyendas",
+"Guardián del Bosque":"un protector de senderos vivos que escucha las raíces y reconoce cada criatura de su territorio",
+"Cazafortunas":"un buscador de reliquias que siempre calcula el riesgo, aunque rara vez sabe cuándo detenerse",
+"Inventor":"un creador de máquinas improvisadas que funcionan por ingenio, cinta y una pizca de suerte",
+"Sacerdotisa":"una mediadora entre lo mortal y lo sagrado que interpreta señales en rituales antiguos",
+"Mercenario":"un combatiente profesional que vende su habilidad, pero no siempre su lealtad",
+"Curandera":"una sanadora que mezcla conocimiento de plantas, remedios y viejas tradiciones",
+"Explorador":"un pionero que dibuja mapas de lugares que todavía no tienen nombre",
+"Hechicero Oscuro":"un practicante de magia prohibida que conoce el precio exacto de cada conjuro",
+"Princesa Guerrera":"una heredera entrenada para defender su reino y cuestionar sus propias leyes",
+"Capitán Espacial":"un comandante de nave acostumbrado a tomar decisiones con poco combustible y menos certezas",
+"Granjero":"un trabajador de la tierra que conoce el clima, los ciclos y el valor de una buena cosecha",
+"Domador de Bestias":"un cuidador capaz de ganarse la confianza de criaturas que otros consideran indomables",
+"Espadachín":"un duelista que perfeccionó su técnica para resolver conflictos antes de que se conviertan en guerras",
+"Chamán":"un guía espiritual que negocia con fuerzas de la naturaleza y espíritus ancestrales",
+"Relojero":"un artesano obsesionado con mecanismos diminutos y con los segundos que otros desperdician",
+"Bruja del Mar":"una hechicera costera que lee las mareas y cobra sus favores en secretos",
+"Cartógrafo":"un dibujante de mapas que registra caminos cambiantes y territorios borrados",
+"Domadora de Tormentas":"una navegante que dirige vientos y relámpagos como si fueran animales salvajes",
+"Errante Dimensional":"un viajero que cruza realidades llevando objetos de mundos que ya no existen",
+"Guardián de Tumbas":"un vigilante de necrópolis que protege a los muertos de quienes quieren despertarlos"
+};
+const PERSONALITY_CORE={
+"Tímido":"habla poco y observa mucho; demuestra afecto con pequeños actos, nunca con grandes discursos",
+"Sarcástico":"responde con ironía incluso en los momentos más tensos, aunque rara vez bromea sobre el dolor ajeno",
+"Heroico":"se interpone ante el peligro antes de pensar si alguien se lo ha pedido",
+"Caótico":"improvisa sin medir consecuencias y suele encontrar soluciones que nadie habría considerado",
+"Melancólico":"guarda objetos de personas que perdió y encuentra belleza en los lugares abandonados",
+"Arrogante":"confía demasiado en su talento y le cuesta admitir que necesita ayuda",
+"Curioso":"abre puertas prohibidas, hace demasiadas preguntas y no puede dejar un misterio sin investigar",
+"Misterioso":"responde con medias verdades y parece conocer detalles que nunca le contaron",
+"Adorable":"se gana la confianza con gestos sinceros, aunque puede ser sorprendentemente tenaz",
+"Traicionero":"siempre calcula qué obtiene de cada alianza y rara vez revela sus verdaderas intenciones",
+"Sabio":"prefiere escuchar antes de actuar y suele detectar el problema detrás del problema",
+"Ingenuo":"confía con facilidad y se sorprende ante la crueldad, pero conserva una valentía genuina",
+"Impulsivo":"actúa en cuanto siente que algo está mal, incluso cuando todavía no entiende la situación",
+"Calculador":"prepara varias salidas para cada plan y casi nunca deja ver cuánto ha previsto",
+"Leal":"no abandona a sus compañeros, incluso cuando la decisión más sensata sería huir",
+"Vengativo":"recuerda cada agravio y corre el riesgo de confundir justicia con revancha",
+"Soñador":"imagina futuros imposibles y trabaja con terquedad para convertir uno en realidad",
+"Estoico":"soporta el dolor sin quejarse y expresa sus emociones a través de sus acciones",
+"Bromista":"utiliza el humor para aliviar tensiones, aunque también para esconder sus propias preocupaciones",
+"Protector":"se responsabiliza de quienes considera suyos y puede volverse imprudente al defenderlos",
+"Solitario":"prefiere viajar sin compañía, pero siempre deja provisiones para el siguiente viajero",
+"Carismático":"convence, reúne aliados y consigue que hasta sus rivales quieran escucharlo",
+"Torpe":"tropieza con los detalles sencillos, pero tiene una habilidad inesperada cuando todo se complica",
+"Hiperactivo":"necesita estar haciendo algo y convierte cualquier espera en una nueva aventura",
+"Obsesivo":"persigue una idea hasta el final, incluso cuando el resto del mundo ya cambió de tema",
+"Generoso":"comparte lo poco que tiene y jamás permite que alguien pase hambre a su lado",
+"Despistado":"olvida nombres y encargos, pero recuerda con precisión datos que nadie más considera importantes",
+"Manipulador":"sabe qué decir para inclinar una conversación y rara vez muestra sus propias cartas",
+"Optimista":"encuentra una posibilidad incluso en las situaciones más desesperadas",
+"Pesimista":"espera lo peor y, por eso mismo, suele estar preparado cuando ocurre",
+"Valiente":"siente miedo, pero no permite que decida por él",
+"Cobarde":"evita el peligro siempre que puede, aunque cuando alguien depende de él termina dando un paso al frente",
+"Perfeccionista":"no entrega nada hasta que cada detalle está en su sitio, aunque eso le haga perder oportunidades",
+"Rebelde":"cuestiona las reglas por instinto y no acepta una autoridad que no se haya ganado su respeto",
+"Paciente":"puede esperar días por el momento correcto y rara vez desperdicia un movimiento",
+"Compasivo":"percibe el sufrimiento ajeno y busca aliviarlo incluso en quienes se han portado mal",
+"Excéntrico":"tiene costumbres desconcertantes y una lógica personal que, contra todo pronóstico, suele funcionar",
+"Frío":"mantiene la calma en crisis y oculta sus afectos detrás de decisiones prácticas",
+"Apasionado":"se entrega por completo a aquello que ama y defiende sus convicciones con intensidad",
+"Disciplinado":"sigue rutinas estrictas y entrena incluso cuando nadie está mirando",
+"Inseguro":"duda de sus capacidades y necesita pruebas constantes de que merece estar donde está",
+"Confiado":"cree en sus habilidades y suele inspirar a otros, aunque a veces subestima los riesgos",
+"Nostálgico":"compara cada lugar nuevo con uno que dejó atrás y conserva recuerdos como tesoros",
+"Curiosamente Letal":"parece inofensivo y hasta distraído, pero actúa con una precisión inquietante cuando alguien amenaza a los suyos",
+"Tierno por fuera, oscuro por dentro":"trata a todos con dulzura, pero guarda una ambición que no comparte con nadie",
+"Adicto al riesgo":"se siente más vivo cuando todo está a punto de salir mal",
+"Filosófico":"cuestiona el sentido de cada misión y encuentra preguntas donde otros solo ven obstáculos",
+"Imprevisible":"cambia de estrategia sin aviso y hasta sus aliados tienen dificultades para anticiparlo"
+};
+const ELEMENT_FORM={
+"Fuego":"su cuerpo está recorrido por grietas incandescentes y el calor aumenta cuando se enfada",
+"Hielo":"su piel cristalina exhala escarcha y puede congelar superficies con solo tocarlas",
+"Agua":"su silueta fluye como una corriente y puede dividirse en chorros para esquivar ataques",
+"Metal":"lleva placas articuladas que se ensamblan y separan como una armadura viva",
+"Madera":"crecen ramas, hojas y raíces desde sus extremidades, que cambian con su estado de ánimo",
+"Electricidad":"pequeños arcos recorren su cuerpo y sus movimientos dejan destellos en el aire",
+"Cristal":"su anatomía translúcida refracta la luz y revela colores distintos según el ángulo",
+"Piedra":"su cuerpo parece tallado en roca antigua y cada paso deja pequeñas fracturas en el suelo",
+"Viento":"su forma nunca permanece quieta; telas, plumas y mechones flotan incluso sin brisa",
+"Veneno":"segrega sustancias de colores brillantes que utiliza para defenderse y preparar antídotos",
+"Luz":"emite un resplandor cálido que dibuja patrones sobre las superficies cercanas",
+"Sombra":"sus bordes se deshacen en humo oscuro y puede esconderse dentro de otras sombras",
+"Arena":"su cuerpo se compone de granos compactos que puede dispersar y reconstruir",
+"Lava":"su piel rocosa está atravesada por canales de magma que brillan al moverse",
+"Humo":"su anatomía se dispersa en volutas y vuelve a condensarse en una figura reconocible",
+"Hongo":"le brotan esporas, sombreros y filamentos luminosos que forman una pequeña red a su alrededor",
+"Hielo negro":"su armadura oscura absorbe la luz y genera filos de escarcha casi invisibles",
+"Gravedad":"fragmentos de piedra y objetos pequeños orbitan a su alrededor como satélites",
+"Sonido":"su cuerpo vibra con ondas visibles y puede convertir su voz en pulsos de fuerza",
+"Plasma":"su silueta está envuelta en energía brillante que cambia de color con cada movimiento"
+};
+const CONCEPT_POWER={
+"Sueños":"puede entrar en los sueños ajenos y materializar durante unos minutos aquello que alguien desea o teme",
+"Muerte":"percibe cuándo una vida está por terminar y puede escuchar las últimas palabras que quedan atrapadas en un lugar",
+"Música":"convierte melodías en efectos físicos: una nota puede levantar muros, calmar bestias o romper encantamientos",
+"Tiempo":"ralentiza unos segundos a su alrededor, pero cada uso le hace perder la noción de cuánto tiempo ha pasado",
+"Caos":"altera el orden de las cosas y provoca resultados imprevisibles que ni siquiera él puede controlar del todo",
+"Suerte":"inclina pequeñas probabilidades a su favor, aunque la fortuna siempre parece cobrar equilibrio después",
+"Amor":"detecta vínculos invisibles entre personas y puede fortalecerlos o revelar cuándo se han roto",
+"Miedo":"materializa las fobias de sus enemigos, pero debe enfrentarse también a las propias",
+"Memoria":"puede tocar un objeto y reconstruir escenas de quienes lo usaron antes",
+"Silencio":"crea zonas donde ningún sonido puede escapar y donde los hechizos pronunciados quedan anulados",
+"Libertad":"rompe ataduras físicas y mágicas, pero no puede obligar a nadie a elegir un camino",
+"Destino":"ve posibles desenlaces como hilos y puede alterar uno, sacrificando otra posibilidad",
+"Envidia":"imita por instantes una habilidad que admira, pero nunca consigue reproducirla sin deformarla",
+"Esperanza":"su presencia devuelve fuerzas a quienes están a punto de rendirse",
+"Soledad":"se vuelve invisible cuando nadie piensa en él y puede escuchar a quienes han sido olvidados",
+"Mentiras":"crea ilusiones convincentes, aunque su reflejo siempre muestra la verdad",
+"Curiosidad":"descubre mecanismos ocultos al formular la pregunta correcta",
+"Nostalgia":"puede reconstruir por unos instantes lugares tal como eran en el pasado",
+"Equilibrio":"redistribuye fuerzas: puede aliviar una herida transfiriendo parte del daño a sí mismo",
+"Olvido":"borra rastros, nombres y recuerdos recientes, incluso de su propia existencia"
+};
+const ANIMAL_TRAIT={
+"Zorro":"orejas enormes, cola espesa y una mirada astuta que delata cada plan",
+"Rana":"piel húmeda, patas elásticas y una lengua capaz de alcanzar objetos a distancia",
+"Búho":"ojos enormes, plumaje silencioso y cuello que gira para vigilar todos los rincones",
+"Tiburón":"aletas, dientes serrados y un olfato capaz de detectar movimiento bajo el agua",
+"Polilla":"alas cubiertas de polvo brillante y antenas que perciben vibraciones",
+"Cabra":"cuernos curvos, pezuñas firmes y un equilibrio extraordinario en terrenos imposibles",
+"Gato":"bigotes sensibles, garras retráctiles y una habilidad casi sobrenatural para caer de pie",
+"Ajolote":"branquias externas, cola acuática y una capacidad de regenerar pequeñas heridas",
+"Cuervo":"plumas negras iridiscentes y una inteligencia capaz de resolver cerraduras y acertijos",
+"Capibara":"cuerpo robusto, patas palmeadas y una calma contagiosa incluso en medio del caos",
+"Erizo":"púas defensivas y un hocico curioso que siempre está buscando algo",
+"Pulpo":"tentáculos prensiles, piel cambiante y una habilidad extraordinaria para escabullirse",
+"Caracol":"caparazón resistente, antenas sensibles y una paciencia que desespera a sus perseguidores",
+"Murciélago":"alas membranosas y ecolocalización para orientarse en la oscuridad",
+"Pato":"pico ancho, patas palmeadas y una sorprendente capacidad para nadar y caminar",
+"Serpiente":"cuerpo flexible, lengua bífida y una mirada fija que intimida",
+"Conejo":"orejas largas, patas veloces y reflejos que lo sacan de apuros",
+"Mapache":"manos hábiles, antifaz natural y talento para abrir cualquier recipiente",
+"Pingüino":"plumaje aislante, postura erguida y gran destreza al deslizarse sobre el hielo",
+"León":"melena abundante, garras poderosas y una presencia que impone respeto"
+};
+const OBJECT_FUSION={
+"Tetera":"la tetera forma parte de su torso y contiene una infusión que cambia según su humor",
+"Reloj":"un reloj incrustado en el pecho marca una hora distinta cada vez que toma una decisión",
+"Farol":"lleva un farol integrado que ilumina caminos ocultos y atrae criaturas nocturnas",
+"Paraguas":"un paraguas resistente se despliega sobre su espalda y funciona como escudo y planeador",
+"Armadura":"placas de armadura cubren sus zonas más vulnerables y se ajustan cuando se mueve",
+"Guitarra":"una guitarra adaptada a su cuerpo convierte cada acorde en una onda de energía",
+"Mochila":"una mochila desproporcionada guarda objetos que parecen mucho más grandes por dentro",
+"Lámpara":"una lámpara en su espalda contiene una pequeña luz viviente que le sirve de compañera",
+"Maleta":"una maleta acoplada a su cuerpo funciona como refugio portátil y almacén de herramientas",
+"Patineta":"una tabla con ruedas le permite desplazarse a toda velocidad y realizar giros imposibles",
+"Tostadora":"un compartimento caliente en su torso tuesta cualquier ingrediente que almacena",
+"Cámara":"un lente en su pecho captura imágenes que revelan cosas invisibles al ojo",
+"Cofre":"su torso funciona como un cofre con cerradura y guarda objetos que considera valiosos",
+"Sombrero":"un sombrero enorme alberga herramientas, pequeños nidos y secretos",
+"Botella":"su cuerpo contiene un líquido que puede liberar en forma de niebla, burbujas o chorros",
+"Llave":"una llave crece de su espalda y puede abrir cerraduras que no tienen puerta",
+"Ventilador":"aspas protegidas en su espalda generan ráfagas para impulsarse o desviar proyectiles",
+"Teléfono":"un auricular y una pantalla le permiten comunicarse con voces que vienen de otros lugares",
+"Piano":"teclas recorren su torso y cada secuencia de notas activa un mecanismo diferente",
+"Escoba":"una escoba forma parte de su equipo y le permite barrer maldiciones y rastros mágicos"
+};
+const PROFESSION_ACTION={
+"Panadero":"hornea panes y pasteles capaces de alimentar a una compañía entera durante una expedición",
+"Alquimista":"prepara elixires, tinturas y explosivos con ingredientes que nadie más se atreve a mezclar",
+"Detective":"resuelve desapariciones siguiendo pistas diminutas y haciendo preguntas incómodas",
+"Jardinero":"cultiva plantas raras y diseña jardines que sirven de refugio a criaturas perseguidas",
+"Pirata":"capitanea una embarcación ligera y busca tesoros que aparecen solo durante ciertas mareas",
+"Carpintero":"construye refugios, trampas y muebles resistentes para viajeros y criaturas enormes",
+"Bibliotecario":"clasifica grimorios y recupera libros que intentan escapar de sus estanterías",
+"Cocinero":"prepara platos que restauran energía y revelan recuerdos a quien los prueba",
+"Médico":"atiende heridas de humanos y monstruos con instrumentos adaptados a cada anatomía",
+"Músico":"compone melodías que alteran el ánimo y despiertan poderes dormidos",
+"Cartógrafo":"dibuja mapas de territorios cambiantes y rutas que desaparecen al amanecer",
+"Herrero":"forja herramientas y armas a medida usando materiales difíciles de conseguir",
+"Mensajero":"transporta cartas y objetos delicados a través de rutas que nadie más puede cruzar",
+"Astrónomo":"observa constelaciones y predice fenómenos que afectan la magia del mundo",
+"Sastre":"confecciona prendas resistentes a transformaciones, clima extremo y hechizos",
+"Pescador":"captura criaturas de río y mar sin dañar el ecosistema que las sostiene",
+"Joyero":"talla gemas que almacenan recuerdos, promesas y pequeñas cantidades de magia",
+"Pastelero":"crea dulces encantados cuyos sabores producen efectos inesperados",
+"Explorador":"abre rutas, registra peligros y encuentra asentamientos perdidos",
+"Relojero":"repara mecanismos delicados y construye autómatas que obedecen órdenes precisas"
+};
+const CREATURE_TRAIT={
+"Vampiro":"colmillos discretos, piel pálida y una capa que oculta sus movimientos",
+"Dragón":"escamas resistentes, cuernos curvos y un aliento capaz de fundir metal",
+"Hada":"alas translúcidas, tamaño diminuto y magia que se manifiesta en polvo brillante",
+"Gólem":"un cuerpo pesado de piedra y barro con runas grabadas en las articulaciones",
+"Fantasma":"un cuerpo semitransparente que flota y atraviesa paredes cuando se asusta",
+"Slime":"un cuerpo gelatinoso que cambia de forma y absorbe objetos sin romperlos",
+"Sirena":"cola poderosa, escamas iridiscentes y una voz que resuena bajo el agua",
+"Hombre lobo":"garras largas, pelaje espeso y sentidos que se agudizan durante la noche",
+"Demonio":"cuernos, cola y marcas incandescentes que aparecen cuando usa su magia",
+"Elfo":"rasgos delicados, orejas puntiagudas y una conexión especial con la naturaleza",
+"Esqueleto":"huesos articulados, cuencas luminosas y piezas que puede desmontar y volver a unir",
+"Grifo":"alas enormes, garras de ave rapaz y cuerpo de felino musculoso",
+"Trol":"piel gruesa, fuerza descomunal y una capacidad de recuperación sorprendente",
+"Fénix":"plumas ardientes que se consumen y renacen cuando cae derrotado",
+"Duende":"estatura pequeña, dedos ágiles y una habilidad innata para esconderse",
+"Cíclope":"un único ojo de gran precisión y una fuerza difícil de contener",
+"Kraken":"tentáculos poderosos y ventosas capaces de sujetar barcos enteros",
+"Quimera":"un cuerpo compuesto por rasgos de varias bestias que no siempre cooperan entre sí",
+"Yeti":"pelaje aislante, manos enormes y una resistencia extraordinaria al frío",
+"Basilisco":"escamas venenosas y una mirada que puede paralizar a quien la sostiene"
+};
+const CONCEPT_IDENTITY={
+"Realeza":"personifica la autoridad y fue criado para representar a un reino",
+"Naturaleza":"es un guardián de los ciclos naturales y siente cualquier daño a su territorio",
+"Tecnología":"encarna el progreso y cree que todo problema puede resolverse con una máquina",
+"Magia":"es la manifestación viviente de un hechizo antiguo que nadie ha logrado descifrar",
+"Océano":"representa la inmensidad del mar y protege sus secretos más profundos",
+"Guerra":"fue creado como símbolo de conquista, aunque ahora cuestiona el propósito de luchar",
+"Paz":"su presencia calma los conflictos y reúne a enemigos bajo una misma causa",
+"Espacio":"siente atracción por lo desconocido y busca un lugar al que llamar hogar",
+"Justicia":"persigue la verdad incluso cuando esta perjudica a quienes debería proteger",
+"Muerte":"acompaña a las almas en su último viaje y no considera la muerte un castigo",
+"Riqueza":"fue criado entre tesoros, pero mide el valor de las cosas de una manera poco convencional",
+"Fama":"vive bajo la mirada ajena y teme que nadie conozca quién es cuando se apagan las luces",
+"Conocimiento":"acumula respuestas, pero descubre que algunas preguntas no deberían resolverse",
+"Caos":"altera cualquier orden establecido y disfruta poniendo a prueba las reglas",
+"Belleza":"representa la perfección exterior y lucha por aceptar sus imperfecciones",
+"Monstruos":"fue señalado como amenaza por su apariencia, aunque suele ser quien salva a los demás",
+"Sueños":"camina entre deseos ajenos y puede dar forma a aquello que alguien imagina",
+"Invierno":"lleva el frío consigo y encuentra refugio en los lugares más inhóspitos",
+"Aventura":"no soporta permanecer quieto y considera cada frontera una invitación",
+"Océano":"protege rutas submarinas y conoce las historias que el mar devuelve a la costa"
+};
+const CONTRADICTION_BEHAVIOR={
+"Tímido":"evita las multitudes y se comunica mejor con gestos que con discursos",
+"Torpe":"tropieza, rompe objetos y aun así termina resolviendo los problemas más difíciles",
+"Glotón":"interrumpe cualquier misión para buscar algo que comer y puede reconocer ingredientes a kilómetros",
+"Cobarde":"huye del peligro antes que nadie, pero nunca deja atrás a un compañero",
+"Presumido":"necesita que todos admiren sus logros y convierte hasta las tareas pequeñas en espectáculos",
+"Despistado":"olvida el objetivo de la misión, aunque recuerda detalles que terminan siendo decisivos",
+"Perezoso":"busca la forma más cómoda de hacer todo y suele inventar soluciones sorprendentemente eficientes",
+"Ingenuo":"cree en las promesas ajenas y tarda en comprender cuándo alguien intenta aprovecharse",
+"Miedoso":"se sobresalta con facilidad y prepara planes de escape para cualquier situación",
+"Romántico":"interpreta cada encuentro como una historia de amor y escribe cartas que nunca se atreve a entregar",
+"Impaciente":"quiere resultados inmediatos y se desespera cuando debe esperar",
+"Desordenado":"pierde sus propias herramientas y lleva un inventario que nunca coincide con la realidad",
+"Exagerado":"narra cada acontecimiento como si fuera una hazaña legendaria",
+"Inseguro":"duda de sus decisiones y busca aprobación incluso cuando tiene razón",
+"Bromista":"no puede evitar hacer chistes en los momentos menos apropiados",
+"Llorón":"se emociona con facilidad y sus lágrimas suelen revelar lo que intenta ocultar",
+"Obsesivo":"se concentra en un detalle hasta descubrir cosas que nadie había notado",
+"Amable":"trata con cuidado incluso a sus enemigos y siempre ofrece una segunda oportunidad",
+"Ingobernable":"rechaza órdenes y prefiere improvisar antes que seguir un plan ajeno",
+"Silencioso":"observa desde lejos y solo habla cuando tiene algo realmente importante que decir"
+};
+const FOOD_FORM={
+"Dona":"su cuerpo es esponjoso, cubierto de glaseado y con una corona de chispas crujientes",
+"Ramen":"lleva mechones de fideos como cabello y un caldo brillante que funciona como reserva de energía",
+"Fresa":"su piel roja está salpicada de semillas doradas y lleva hojas verdes como una pequeña corona",
+"Champiñón":"su sombrero moteado protege un cuerpo flexible y libera esporas de colores",
+"Helado":"su cuerpo tiene capas cremosas que cambian de sabor y se derriten cuando se enfada",
+"Taco":"su armadura de tortilla crujiente guarda capas de ingredientes que puede desplegar como escudo",
+"Cupcake":"lleva una cubierta de crema que funciona como casco y pequeñas decoraciones a modo de insignias",
+"Sandía":"su coraza verde protege un interior rojo lleno de semillas que utiliza como proyectiles",
+"Galleta":"su cuerpo horneado tiene bordes dorados y pequeñas grietas que brillan cuando usa magia",
+"Queso":"su armadura amarilla está llena de agujeros y puede estirarse como una red elástica",
+"Sushi":"combina capas de arroz, alga y relleno como una armadura compacta y flexible",
+"Pancake":"lleva capas suaves apiladas y una capa de miel que le permite adherirse a superficies",
+"Uva":"su cuerpo está formado por pequeñas esferas que puede separar y reunir a voluntad",
+"Limón":"su piel amarilla y porosa almacena un ácido brillante que utiliza para defenderse",
+"Chocolate":"su armadura oscura se derrite con el calor y vuelve a endurecerse al enfriarse",
+"Palomitas":"su cuerpo ligero puede expandirse en una nube de piezas crujientes para esquivar ataques",
+"Pera":"su silueta verde y redondeada esconde un núcleo resistente y semillas con propiedades mágicas",
+"Pan":"su corteza dorada protege un interior cálido que puede regenerar pequeñas grietas",
+"Caramelo":"su cuerpo translúcido refleja colores y puede endurecerse como cristal",
+"Café":"su armadura tostada desprende vapor y almacena energía en una bebida oscura"
+};
+const FANTASY_ROLE={
+"Dragón":"un dragón guardián que protege su tesoro y exige acertijos a quien quiera acercarse",
+"Bruja":"una bruja viajera que prepara hechizos con ingredientes encontrados en el camino",
+"Caballero":"un caballero errante que defiende aldeas a cambio de comida y refugio",
+"Fantasma":"un fantasma que aparece en cocinas abandonadas para terminar una receta pendiente",
+"Hada":"un hada recolectora que cuida jardines encantados y castiga a quien desperdicia alimentos",
+"Rey":"un monarca de un pequeño reino que gobierna con decretos culinarios",
+"Ninja":"un ninja sigiloso que se infiltra en fortalezas para recuperar recetas robadas",
+"Sirena":"una sirena que cocina para los habitantes de arrecifes y barcos hundidos",
+"Vampiro":"un vampiro aristócrata que busca una alternativa deliciosa a su dieta tradicional",
+"Robot":"un robot de cocina que desarrolló conciencia y decidió convertirse en aventurero",
+"Pirata":"un pirata que navega buscando especias legendarias y mapas comestibles",
+"Unicornio":"un unicornio errante cuya magia purifica alimentos y fuentes contaminadas",
+"Gólem":"un gólem de despensa construido para proteger provisiones durante los inviernos",
+"Demonio":"un demonio tentador que firma pactos a cambio de recetas irresistibles",
+"Ángel":"un ángel mensajero que entrega alimentos mágicos a quienes han perdido la esperanza",
+"Explorador":"un explorador que busca ingredientes imposibles en regiones desconocidas",
+"Mago":"un mago que transforma recetas en conjuros y conjuros en platos",
+"Fénix":"un fénix que renace de las brasas de un horno antiguo",
+"Monstruo":"un monstruo de aspecto temible que solo quiere encontrar nuevos sabores",
+"Princesa":"una princesa aventurera que abandonó el palacio para descubrir la cocina de su reino"
+};
+
+function detail(map,name,fallback){return map[name]||fallback;}
+function spanishArticle(name,kind){
+  const feminine={
+    animal:['Rana','Polilla','Cabra','Serpiente','Ardilla','Nutria'],
+    object:['Tetera','Armadura','Guitarra','Mochila','Lámpara','Maleta','Patineta','Tostadora','Cámara','Botella','Llave','Escoba'],
+    creature:['Hada','Sirena','Quimera','Medusa','Bruja']
+  };
+  const list=feminine[kind]||[];
+  if(kind==='creature'&&name==='Hada')return 'un';
+  if(list.includes(name))return 'una';
+  return 'un';
+}
+function buildFusionBio(mode,a,b){
+  const A=a.name,B=b.name;
+  if(mode==='elements'){
+    const form=detail(ELEMENT_FORM,A,`su cuerpo manifiesta las propiedades de ${A.toLowerCase()}`);
+    const power=detail(CONCEPT_POWER,B,`puede manipular el concepto de ${B.toLowerCase()} a su manera`);
+    return `Este guardián nace de la unión entre ${A.toLowerCase()} y ${B.toLowerCase()}. ${form.charAt(0).toUpperCase()+form.slice(1)}. ${power.charAt(0).toUpperCase()+power.slice(1)}. No es un simple elemental: es una criatura que convierte ${B.toLowerCase()} en una fuerza tangible y debe aprender a controlar el precio de ese poder.`;
+  }
+  if(mode==='animalObject'){
+    const animal=detail(ANIMAL_TRAIT,A,`rasgos físicos propios de un ${A.toLowerCase()}`);
+    const object=detail(OBJECT_FUSION,B,`el objeto ${B.toLowerCase()} está integrado en su anatomía y cumple una función práctica`);
+    return `Este personaje combina la anatomía de ${spanishArticle(A,'animal')} ${A.toLowerCase()} con un diseño construido alrededor de ${spanishArticle(B,'object')} ${B.toLowerCase()}. Tiene ${animal}. Además, ${object.charAt(0).toLowerCase()+object.slice(1)}. Aunque parece una criatura extravagante, utiliza su ingenioso cuerpo para resolver problemas y transportar todo lo que otros no pueden llevar.`;
+  }
+  if(mode==='professionCreature'){
+    const job=detail(PROFESSION_ACTION,A,`trabaja como ${A.toLowerCase()} y ha adaptado sus herramientas a su forma de vida`);
+    const creature=detail(CREATURE_TRAIT,B,`rasgos fantásticos propios de un ${B.toLowerCase()}`);
+    return `Esta criatura pertenece a la especie de ${spanishArticle(B,'creature')} ${B.toLowerCase()} y decidió ganarse la vida como ${A.toLowerCase()}. ${job.charAt(0).toUpperCase()+job.slice(1)}. Su aspecto conserva ${creature}, pero lleva ropa y herramientas diseñadas para su oficio. Su mayor desafío es demostrar que su especie puede hacer mucho más que cumplir con los prejuicios que otros tienen sobre ella.`;
+  }
+  if(mode==='conceptContradiction'){
+    const identity=detail(CONCEPT_IDENTITY,A,`representa ${A.toLowerCase()} y carga con las expectativas que eso implica`);
+    const behavior=detail(CONTRADICTION_BEHAVIOR,B,`su comportamiento es ${B.toLowerCase()} y suele sorprender a quienes esperan otra cosa`);
+    return `Este personaje representa el concepto de ${A.toLowerCase()}: ${identity.charAt(0).toLowerCase()+identity.slice(1)}. Sin embargo, su comportamiento contradice esa imagen: ${behavior.charAt(0).toLowerCase()+behavior.slice(1)}. Esa contradicción afecta su manera de vestir, hablar y relacionarse con los demás. Su conflicto no consiste en cambiar quién es, sino en encontrar una forma propia de cumplir —o romper— el papel que le impusieron.`;
+  }
+  if(mode==='foodFantasy'){
+    const food=detail(FOOD_FORM,A,`su cuerpo está formado por detalles, colores y texturas inspirados en ${A.toLowerCase()}`);
+    const role=detail(FANTASY_ROLE,B,`es un ${B.toLowerCase()} aventurero con poderes mágicos`);
+    return `Conoce a este ${B.toLowerCase()} nacido de una receta fantástica. ${food.charAt(0).toUpperCase()+food.slice(1)}. En el mundo mágico, su papel es claro: ${role.charAt(0).toLowerCase()+role.slice(1)}. Su aspecto puede parecer delicioso, pero no conviene subestimarlo: sus habilidades culinarias y mágicas lo convierten en un aliado muy particular.`;
+  }
+  return `Una combinación de ${A} y ${B} ha dado forma a un personaje singular.`;
+}
+function buildClassicBio(char,pers,ctx){
+  const core=detail(CHARACTER_CORE,char,`un personaje de la especie o profesión ${char.toLowerCase()}`);
+  const trait=detail(PERSONALITY_CORE,pers,`una personalidad ${pers.toLowerCase()}`);
+  const world={
+    "Apocalipsis Zombie":"En un mundo donde las ciudades están tomadas por los infectados, busca suministros y un refugio que todavía pueda defenderse.",
+    "Edad Media":"En un reino de caminos peligrosos y alianzas frágiles, sus decisiones pueden cambiar el destino de una aldea.",
+    "Ciberpunk 2099":"Entre neones, implantes y corporaciones, intenta sobrevivir sin convertirse en propiedad de nadie.",
+    "Escuela de Magia":"En una academia donde cada hechizo tiene consecuencias, destaca por una técnica que sus profesores no saben clasificar.",
+    "Espacio Profundo":"A bordo de una nave que viaja más allá de las rutas conocidas, investiga una señal que nadie más puede escuchar.",
+    "Posguerra Nuclear":"Recorre territorios contaminados buscando piezas, agua limpia y una razón para reconstruir.",
+    "Olimpo Griego":"Los dioses conocen su nombre, pero no se ponen de acuerdo sobre si es una bendición o un problema.",
+    "Tokyo Neon":"Se mueve entre callejones iluminados, mercados nocturnos y secretos que se venden al mejor postor.",
+    "Selva Encantada":"Protege un territorio donde las plantas observan, los senderos cambian y cada criatura tiene sus propias reglas.",
+    "Desierto Mágico":"Cruza dunas que esconden ciudades enterradas y oasis que solo aparecen ante quienes conocen su historia.",
+    "Submundo Steampunk":"Sobrevive entre máquinas de vapor, inventores rivales y una ciudad que nunca deja de producir humo.",
+    "Colonia en Marte":"Ayuda a mantener viva una colonia aislada donde cada recurso cuenta y cualquier error puede ser fatal.",
+    "Reino Sumergido":"Explora palacios hundidos y corrientes profundas en busca de algo que el océano se niega a devolver.",
+    "Torneo Real":"Compite en una prueba donde la fuerza importa menos que la estrategia, las alianzas y la reputación.",
+    "Imperio Galáctico":"Viaja por sistemas controlados por un imperio que teme cualquier forma de independencia.",
+    "Bosque Maldito":"Busca el origen de una maldición que está convirtiendo a los habitantes del bosque en parte de sus árboles.",
+    "Academia de Héroes":"Entrena para dominar sus habilidades mientras descubre que salvar a otros no siempre significa ganar una batalla.",
+    "Ciudad Flotante":"Vive entre plataformas suspendidas sobre las nubes, donde el viento es transporte y también amenaza.",
+    "Dimensión Paralela":"Ha quedado atrapado en una realidad casi idéntica a la suya, salvo por un detalle que cambia todas las reglas.",
+    "Guerra de Clanes":"Debe decidir si la lealtad a su clan vale más que la paz que podría conseguir con sus antiguos enemigos."
+  };
+  const setting=world[ctx]||`En ${ctx}, su historia se cruza con facciones rivales, lugares extraños y decisiones que pueden cambiar su destino.`;
+  return `Es ${core}. Su carácter ${pers.toLowerCase()} se nota en que ${trait.charAt(0).toLowerCase()+trait.slice(1)}. ${setting} Ahora persigue un objetivo concreto: encontrar su lugar en ese mundo sin renunciar a aquello que lo hace diferente.`;
+}
+
 
 function pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
 function animate(el){el.classList.remove('spinning');void el.offsetWidth;el.classList.add('spinning');setTimeout(()=>el.classList.remove('spinning'),400);}
 
-let currentChar=null, currentPers=null, currentCtx=null, currentBio='';
+let currentChar=null, currentPers=null, currentCtx=null, currentBio='', currentResultName='';
+let activeMode='classic';
+let lockedSlots=[false,false];
 
-function generate(){
-  const char=pick(CHARACTERS),pers=pick(PERSONALITIES),ctx=pick(CONTEXTS);
-  applyResult(char,pers,ctx);
+const MODE_CONFIG={
+  elements:{title:'Elemento físico + Elemento conceptual',description:'Combina una fuerza o material con una idea abstracta.',aLabel:'01 · Elemento físico',bLabel:'02 · Elemento conceptual',a: [
+    ['Fuego','🔥','#ff6b3d'],['Hielo','❄️','#4cc9f0'],['Agua','💧','#4cc9f0'],['Metal','⚙️','#9b97b8'],['Madera','🌳','#06a77d'],['Electricidad','⚡','#ffd166'],['Cristal','💎','#c77dff'],['Piedra','🪨','#b08968'],['Viento','🌪️','#4cc9f0'],['Veneno','☠️','#9bde5a'],['Luz','☀️','#ffd166'],['Sombra','🌑','#9b97b8'],['Arena','🏜️','#e6b566'],['Lava','🌋','#ff6b3d'],['Humo','💨','#aaa6bb'],['Hongo','🍄','#ff6b9d'],['Hielo negro','🧊','#7895c8'],['Gravedad','🪐','#9b7bda'],['Sonido','🔊','#4cc9f0'],['Plasma','✨','#c77dff']
+  ],b:[
+    ['Sueños','💭','#c77dff'],['Muerte','💀','#9b97b8'],['Música','🎵','#ff6b9d'],['Tiempo','⏳','#ffd166'],['Caos','🌀','#ff9a3c'],['Suerte','🍀','#06d6a0'],['Amor','💗','#ff6b9d'],['Miedo','👁️','#9b97b8'],['Memoria','🧠','#c77dff'],['Silencio','🤫','#4cc9f0'],['Libertad','🕊️','#f8f4ff'],['Destino','🔮','#c77dff'],['Envidia','🐍','#06d6a0'],['Esperanza','🌟','#ffd166'],['Soledad','🌙','#7895c8'],['Mentiras','🎭','#ff6b9d'],['Curiosidad','🔍','#4cc9f0'],['Nostalgia','📷','#b08968'],['Equilibrio','☯️','#06d6a0'],['Olvido','🌫️','#9b97b8']
+  ]},
+  animalObject:{title:'Animal + Objeto',description:'Fusiona un animal con un objeto cotidiano, mágico o inesperado.',aLabel:'01 · Animal',bLabel:'02 · Objeto',a:[
+    ['Zorro','🦊','#ff9a3c'],['Rana','🐸','#06d6a0'],['Búho','🦉','#b08968'],['Tiburón','🦈','#4cc9f0'],['Polilla','🦋','#c77dff'],['Cabra','🐐','#9b97b8'],['Gato','🐈','#ff6b9d'],['Ajolote','🦎','#ff9acb'],['Cuervo','🐦‍⬛','#9b97b8'],['Capibara','🦫','#b08968'],['Erizo','🦔','#b08968'],['Pulpo','🐙','#c77dff'],['Caracol','🐌','#06a77d'],['Murciélago','🦇','#9b97b8'],['Pato','🦆','#ffd166'],['Serpiente','🐍','#06d6a0'],['Conejo','🐇','#f8f4ff'],['Mapache','🦝','#9b97b8'],['Pingüino','🐧','#4cc9f0'],['León','🦁','#ff9a3c']
+  ],b:[
+    ['Tetera','🫖','#c77dff'],['Reloj','⏰','#ffd166'],['Farol','🏮','#ff9a3c'],['Paraguas','☂️','#4cc9f0'],['Armadura','🛡️','#9b97b8'],['Guitarra','🎸','#ff6b9d'],['Mochila','🎒','#b08968'],['Lámpara','💡','#ffd166'],['Maleta','🧳','#b08968'],['Patineta','🛹','#ff6b9d'],['Tostadora','🍞','#ff9a3c'],['Cámara','📷','#9b97b8'],['Cofre','🧰','#b08968'],['Sombrero','🎩','#9b97b8'],['Botella','🍾','#06d6a0'],['Llave','🗝️','#ffd166'],['Ventilador','🪭','#4cc9f0'],['Teléfono','☎️','#c77dff'],['Piano','🎹','#f8f4ff'],['Escoba','🧹','#b08968']
+  ]},
+  professionCreature:{title:'Profesión + Criatura',description:'Imagina qué pasaría si una criatura fantástica tuviera un oficio.',aLabel:'01 · Profesión',bLabel:'02 · Criatura',a:[
+    ['Panadero','🥖','#ffd166'],['Alquimista','⚗️','#06d6a0'],['Detective','🕵️','#9b97b8'],['Jardinero','🪴','#06d6a0'],['Pirata','🏴‍☠️','#ff9a3c'],['Carpintero','🪚','#b08968'],['Bibliotecario','📚','#c77dff'],['Cocinero','🧑‍🍳','#ff6b9d'],['Médico','🩺','#4cc9f0'],['Músico','🎻','#c77dff'],['Cartógrafo','🗺️','#ffd166'],['Herrero','🔨','#ff9a3c'],['Mensajero','📯','#ffd166'],['Astrónomo','🔭','#4cc9f0'],['Sastre','🧵','#ff6b9d'],['Pescador','🎣','#4cc9f0'],['Joyero','💍','#c77dff'],['Pastelero','🧁','#ff6b9d'],['Explorador','🧭','#06d6a0'],['Relojero','⚙️','#b08968']
+  ],b:[
+    ['Vampiro','🧛','#ff6b9d'],['Dragón','🐉','#ff9a3c'],['Hada','🧚','#c77dff'],['Gólem','🗿','#b08968'],['Fantasma','👻','#c8b6ff'],['Slime','🫧','#06d6a0'],['Sirena','🧜','#4cc9f0'],['Hombre lobo','🐺','#9b97b8'],['Demonio','😈','#ff4444'],['Elfo','🧝','#06d6a0'],['Esqueleto','💀','#f8f4ff'],['Grifo','🦅','#ffd166'],['Trol','👹','#06a77d'],['Fénix','🔥','#ff6b3d'],['Duende','🍀','#06d6a0'],['Cíclope','👁️','#9b97b8'],['Kraken','🐙','#c77dff'],['Quimera','🦁','#ff9a3c'],['Yeti','⛄','#4cc9f0'],['Basilisco','🐍','#06a77d']
+  ]},
+  conceptContradiction:{title:'Concepto + Contradicción',description:'Crea un personaje cuya identidad choque con su personalidad.',aLabel:'01 · Concepto',bLabel:'02 · Contradicción',a:[
+    ['Realeza','👑','#ffd166'],['Naturaleza','🌿','#06d6a0'],['Tecnología','🤖','#4cc9f0'],['Magia','✨','#c77dff'],['Océano','🌊','#4cc9f0'],['Guerra','⚔️','#ff6b3d'],['Paz','🕊️','#f8f4ff'],['Espacio','🪐','#7895c8'],['Justicia','⚖️','#ffd166'],['Muerte','💀','#9b97b8'],['Riqueza','💰','#ffd166'],['Fama','🎤','#ff6b9d'],['Religión antigua','🏛️','#c8b6a6'],['Conocimiento','📖','#c77dff'],['Caos','🌀','#ff9a3c'],['Belleza','🌸','#ff6b9d'],['Monstruos','👹','#ff6b3d'],['Sueños','🌙','#c77dff'],['Invierno','❄️','#4cc9f0'],['Aventura','🧭','#06d6a0']
+  ],b:[
+    ['Tímido','🙈','#c77dff'],['Torpe','🤹','#ffd166'],['Glotón','🍰','#ff9a3c'],['Cobarde','😰','#4cc9f0'],['Presumido','😎','#ff6b9d'],['Despistado','🤔','#c8b6ff'],['Perezoso','😴','#7895c8'],['Ingenuo','🥺','#06d6a0'],['Miedoso','😱','#ff6b9d'],['Romántico','💘','#ff6b9d'],['Impaciente','⏱️','#ff9a3c'],['Desordenado','🧦','#b08968'],['Exagerado','🎭','#c77dff'],['Inseguro','🫣','#9b97b8'],['Bromista','🤡','#ffd166'],['Llorón','😭','#4cc9f0'],['Obsesivo','🔎','#9b97b8'],['Amable','🌼','#06d6a0'],['Ingobernable','💥','#ff6b3d'],['Silencioso','🤐','#7895c8']
+  ]},
+  foodFantasy:{title:'Comida + Fantasía',description:'Convierte alimentos deliciosos en héroes, monstruos y seres mágicos.',aLabel:'01 · Comida',bLabel:'02 · Fantasía',a:[
+    ['Dona','🍩','#ff6b9d'],['Ramen','🍜','#ffd166'],['Fresa','🍓','#ff6b9d'],['Champiñón','🍄','#ff6b3d'],['Helado','🍦','#4cc9f0'],['Taco','🌮','#ff9a3c'],['Cupcake','🧁','#c77dff'],['Sandía','🍉','#06d6a0'],['Galleta','🍪','#b08968'],['Queso','🧀','#ffd166'],['Sushi','🍣','#ff6b9d'],['Pancake','🥞','#ff9a3c'],['Uva','🍇','#9b70d6'],['Limón','🍋','#c4d936'],['Chocolate','🍫','#9b6548'],['Palomitas','🍿','#ffd166'],['Pera','🍐','#06a77d'],['Pan','🍞','#b08968'],['Caramelo','🍬','#ff6b9d'],['Café','🧋','#b08968']
+  ],b:[
+    ['Dragón','🐉','#ff9a3c'],['Bruja','🧙‍♀️','#c77dff'],['Caballero','🛡️','#4cc9f0'],['Fantasma','👻','#c8b6ff'],['Hada','🧚','#ff6b9d'],['Rey','🤴','#ffd166'],['Ninja','🥷','#9b97b8'],['Sirena','🧜','#4cc9f0'],['Vampiro','🧛','#ff6b9d'],['Robot','🤖','#4cc9f0'],['Pirata','🏴‍☠️','#ff9a3c'],['Unicornio','🦄','#c77dff'],['Gólem','🗿','#b08968'],['Demonio','😈','#ff4444'],['Ángel','😇','#ffd166'],['Explorador','🧭','#06d6a0'],['Mago','🧙','#c77dff'],['Fénix','🔥','#ff6b3d'],['Monstruo','👹','#ff6b3d'],['Princesa','👸','#ff6b9d']
+  ]}
+};
+
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function animate(el){el.classList.remove('spinning');void el.offsetWidth;el.classList.add('spinning');setTimeout(()=>el.classList.remove('spinning'),400);}
+function toItem(raw){return {name:raw[0],emoji:raw[1],color:raw[2]};}
+function setMode(mode){
+  if(!MODE_CONFIG[mode] && mode!=='classic')return;
+  activeMode=mode;lockedSlots=[false,false];
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
+  const classic=mode==='classic';
+  document.getElementById('modeDescription').textContent=classic?'Combina tres ingredientes para descubrir un personaje inesperado.':MODE_CONFIG[mode].description;
+  document.getElementById('slotsRow').style.gridTemplateColumns=classic?'':'repeat(2,minmax(0,1fr))';
+  document.getElementById('slotControls').style.display=classic?'none':'flex';
+  document.getElementById('comboCounter').textContent=classic?'✨ +125,000 combinaciones posibles':`✨ ${MODE_CONFIG[mode].a.length*MODE_CONFIG[mode].b.length} combinaciones posibles`;
+  const cards=[document.getElementById('cardChar'),document.getElementById('cardPers'),document.getElementById('cardCtx')];
+  if(classic){
+    cards[2].style.display='';
+    cards[0].querySelector('.slot-label').innerHTML='<span class="slot-dot"></span>01 · Ingrediente Base';
+    cards[1].querySelector('.slot-label').innerHTML='<span class="slot-dot"></span>02 · La Especia Secreta';
+    cards[2].querySelector('.slot-label').innerHTML='<span class="slot-dot"></span>03 · La Poción que lo Transforma Todo';
+    document.getElementById('slotsHint').textContent='👆 Toca cualquier ingrediente para cambiarlo';
+  }else{
+    const cfg=MODE_CONFIG[mode];cards[2].style.display='none';
+    cards[0].querySelector('.slot-label').innerHTML=`<span class="slot-dot"></span>${cfg.aLabel}`;
+    cards[1].querySelector('.slot-label').innerHTML=`<span class="slot-dot"></span>${cfg.bLabel}`;
+    document.getElementById('slotsHint').textContent='👆 Toca una tarjeta para cambiar ese elemento';
+    updateLockButtons();
+  }
+  currentChar=currentPers=currentCtx=null;
+  document.getElementById('resultCard').classList.remove('show');
+  document.getElementById('exportBtn').classList.remove('show');
+  document.getElementById('inspoGrid').innerHTML='';
+  generate();
 }
-
+function toggleLock(index){lockedSlots[index]=!lockedSlots[index];updateLockButtons();}
+function updateLockButtons(){
+  [0,1].forEach(i=>{const b=document.getElementById(i===0?'lockFirst':'lockSecond');b.classList.toggle('locked',lockedSlots[i]);b.textContent=`${lockedSlots[i]?'🔒':'🔓'} Bloquear elemento ${i+1}`;});
+}
+function generate(){
+  if(activeMode==='classic'){
+    const char=pick(CHARACTERS),pers=pick(PERSONALITIES),ctx=pick(CONTEXTS);
+    applyResult(char,pers,ctx);return;
+  }
+  const cfg=MODE_CONFIG[activeMode];
+  const a=lockedSlots[0]&&currentChar?currentChar:toItem(pick(cfg.a));
+  const b=lockedSlots[1]&&currentPers?currentPers:toItem(pick(cfg.b));
+  applyFusionResult(a,b);
+}
+function applyFusionResult(a,b){
+  currentChar=a;currentPers=b;currentCtx={name:MODE_CONFIG[activeMode].title,color:'#06d6a0'};
+  const s1=document.getElementById('slotChar'),s2=document.getElementById('slotPersonality');
+  s1.textContent=a.emoji+' '+a.name;s2.textContent=b.emoji+' '+b.name;
+  s1.style.color=a.color;s2.style.color=b.color;animate(s1);animate(s2);
+  const cfg=MODE_CONFIG[activeMode];
+  const names={elements:`${a.name} ${b.name}`,animalObject:`${a.name} ${b.name}`,professionCreature:`${b.name} ${a.name}`,conceptContradiction:`${a.name} ${b.name}`,foodFantasy:`${a.name} ${b.name}`};
+  currentBio=buildFusionBio(activeMode,a,b);
+  renderResult(names[activeMode],[a,b,currentCtx],a.emoji,a.color,currentBio);
+  buildInspo();
+}
 function applyResult(char,pers,ctx){
   currentChar=char;currentPers=pers;currentCtx=ctx;
   const s1=document.getElementById('slotChar'),s2=document.getElementById('slotPersonality'),s3=document.getElementById('slotContext');
   s1.textContent=char.emoji+' '+char.name;s2.textContent=pers.name;s3.textContent=ctx.name;
   s1.style.color=char.color;s2.style.color=pers.color;s3.style.color=ctx.color;
   animate(s1);animate(s2);animate(s3);
-  const bio=pick(BIOS)(char.name,pers.name,ctx.name);
-  currentBio=bio;
-  const card=document.getElementById('resultCard');card.classList.remove('show');void card.offsetWidth;
-  document.getElementById('charPortrait').textContent=char.emoji;
-  document.getElementById('resultName').textContent=char.name+' '+pers.name;
-  document.getElementById('resultName').style.color=char.color;
-  document.getElementById('resultBadges').innerHTML=`<span class="badge-pill" style="background:${char.color}22;color:${char.color}">${char.name}</span><span class="badge-pill" style="background:${pers.color}22;color:${pers.color}">${pers.name}</span><span class="badge-pill" style="background:${ctx.color}22;color:${ctx.color}">${ctx.name}</span>`;
-  document.getElementById('resultBio').textContent=bio;
-  card.classList.add('show');
+  currentBio=buildClassicBio(char.name,pers.name,ctx.name);
+  renderResult(char.name+' '+pers.name,[char,pers,ctx],char.emoji,char.color,currentBio);
   buildInspo();
-  document.getElementById('exportBtn').classList.add('show');
 }
-
-function applyInspo(char,pers,ctx){ applyResult(char,pers,ctx); }
-
-/* ── INDIVIDUAL SLOT CYCLING ── */
-function cycleSlot(which){
-  // If nothing generated yet, do a full random generate first
-  if(!currentChar || !currentPers || !currentCtx){ generate(); return; }
-
-  if(which==='char'){
-    let next; do{ next=pick(CHARACTERS); }while(next.name===currentChar.name && CHARACTERS.length>1);
-    currentChar=next;
-    const s1=document.getElementById('slotChar');
-    s1.textContent=currentChar.emoji+' '+currentChar.name;
-    s1.style.color=currentChar.color;
-    animate(s1);
-  } else if(which==='pers'){
-    let next; do{ next=pick(PERSONALITIES); }while(next.name===currentPers.name && PERSONALITIES.length>1);
-    currentPers=next;
-    const s2=document.getElementById('slotPersonality');
-    s2.textContent=currentPers.name;
-    s2.style.color=currentPers.color;
-    animate(s2);
-  } else if(which==='ctx'){
-    let next; do{ next=pick(CONTEXTS); }while(next.name===currentCtx.name && CONTEXTS.length>1);
-    currentCtx=next;
-    const s3=document.getElementById('slotContext');
-    s3.textContent=currentCtx.name;
-    s3.style.color=currentCtx.color;
-    animate(s3);
-  }
-
-  // Refresh the result card + bio with the updated combo, without re-randomizing everything
-  refreshResultCard();
-}
-
-function refreshResultCard(){
-  const char=currentChar, pers=currentPers, ctx=currentCtx;
-  const bio=pick(BIOS)(char.name,pers.name,ctx.name);
-  currentBio=bio;
-  const card=document.getElementById('resultCard');
-  if(!card.classList.contains('show')){ card.classList.add('show'); }
-  document.getElementById('charPortrait').textContent=char.emoji;
-  document.getElementById('resultName').textContent=char.name+' '+pers.name;
-  document.getElementById('resultName').style.color=char.color;
-  document.getElementById('resultBadges').innerHTML=`<span class="badge-pill" style="background:${char.color}22;color:${char.color}">${char.name}</span><span class="badge-pill" style="background:${pers.color}22;color:${pers.color}">${pers.name}</span><span class="badge-pill" style="background:${ctx.color}22;color:${ctx.color}">${ctx.name}</span>`;
+function renderResult(name,badges,emoji,color,bio){
+  currentResultName=name;
+  const card=document.getElementById('resultCard');card.classList.remove('show');void card.offsetWidth;
+  document.getElementById('charPortrait').textContent=emoji;
+  document.getElementById('resultName').textContent=name;
+  document.getElementById('resultName').style.color=color;
+  document.getElementById('resultBadges').innerHTML=badges.map(x=>`<span class="badge-pill" style="background:${x.color}22;color:${x.color}">${x.name}</span>`).join('');
   document.getElementById('resultBio').textContent=bio;
-  document.getElementById('exportBtn').classList.add('show');
+  card.classList.add('show');document.getElementById('exportBtn').classList.add('show');
 }
-
+function applyInspo(a,b,c){if(activeMode==='classic')applyResult(a,b,c);else applyFusionResult(a,b);}
+function cycleSlot(which){
+  if(activeMode==='classic'){
+    if(!currentChar||!currentPers||!currentCtx){generate();return;}
+    if(which==='char'){let n;do{n=pick(CHARACTERS);}while(n.name===currentChar.name);currentChar=n;}
+    else if(which==='pers'){let n;do{n=pick(PERSONALITIES);}while(n.name===currentPers.name);currentPers=n;}
+    else if(which==='ctx'){let n;do{n=pick(CONTEXTS);}while(n.name===currentCtx.name);currentCtx=n;}
+    const s1=document.getElementById('slotChar'),s2=document.getElementById('slotPersonality'),s3=document.getElementById('slotContext');
+    s1.textContent=currentChar.emoji+' '+currentChar.name;s2.textContent=currentPers.name;s3.textContent=currentCtx.name;
+    s1.style.color=currentChar.color;s2.style.color=currentPers.color;s3.style.color=currentCtx.color;
+    [s1,s2,s3].forEach(animate);
+    currentBio=pick(BIOS)(currentChar.name,currentPers.name,currentCtx.name);
+    renderResult(currentChar.name+' '+currentPers.name,[currentChar,currentPers,currentCtx],currentChar.emoji,currentChar.color,currentBio);
+  }else{
+    const cfg=MODE_CONFIG[activeMode],idx=which==='char'?0:1;
+    if(idx===0)currentChar=toItem(pick(cfg.a));else currentPers=toItem(pick(cfg.b));
+    applyFusionResult(currentChar||toItem(pick(cfg.a)),currentPers||toItem(pick(cfg.b)));
+  }
+}
 function buildInspo(){
   const grid=document.getElementById('inspoGrid');grid.innerHTML='';
   for(let i=0;i<8;i++){
-    const c=pick(CHARACTERS),p=pick(PERSONALITIES),x=pick(CONTEXTS);
-    const div=document.createElement('div');div.className='inspo-chip';div.style.borderColor=c.color+'44';
-    div.innerHTML=`<div class="ic-emoji">${c.emoji}</div><div class="ic-name" style="color:${c.color}">${c.name} ${p.name}</div><div class="ic-type">${x.name}</div>`;
-    div.onclick=()=>applyInspo(c,p,x);grid.appendChild(div);
+    const div=document.createElement('div');div.className='inspo-chip';
+    if(activeMode==='classic'){
+      const c=pick(CHARACTERS),p=pick(PERSONALITIES),x=pick(CONTEXTS);div.style.borderColor=c.color+'44';
+      div.innerHTML=`<div class="ic-emoji">${c.emoji}</div><div class="ic-name" style="color:${c.color}">${c.name} ${p.name}</div><div class="ic-type">${x.name}</div>`;
+      div.onclick=()=>applyInspo(c,p,x);
+    }else{
+      const cfg=MODE_CONFIG[activeMode],a=toItem(pick(cfg.a)),b=toItem(pick(cfg.b));div.style.borderColor=a.color+'66';
+      div.innerHTML=`<div class="ic-emoji">${a.emoji} + ${b.emoji}</div><div class="ic-name" style="color:${a.color}">${a.name} + ${b.name}</div><div class="ic-type">${cfg.title}</div>`;
+      div.onclick=()=>applyInspo(a,b);
+    }
+    grid.appendChild(div);
   }
 }
 
@@ -407,7 +887,7 @@ async function exportToStory(){
   ctx.restore();
 
   // Name — auto-fit to canvas width, shrinking font or wrapping to 2 lines if needed
-  const fullName = currentChar.name+' '+currentPers.name;
+  const fullName = currentResultName || (currentChar.name+' '+currentPers.name);
   const maxNameWidth = 920;
   let nameFontSize = 64;
   ctx.fillStyle=currentChar.color;
